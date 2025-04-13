@@ -1,5 +1,5 @@
 Package: simecol 
-Version: 0.8-14
+Version: 0.9-1
 Title: Simulation of Ecological (and Other) Dynamic Systems
 Authors@R: c(person("Thomas","Petzoldt", role = c("aut", "cre"),
                      email = "thomas.petzoldt@tu-dresden.de",
@@ -16,5 +16,5 @@ Description: An object oriented framework to simulate
   models as well. It supports structuring of simulation scenarios (to avoid copy
   and paste) and aims to improve readability and re-usability of code.
 License: GPL (>= 2)  
-URL: http://www.simecol.de/
+URL: https://github.com/tpetzoldt/simecol/
 
