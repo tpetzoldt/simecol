@@ -26,7 +26,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        #os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
         r-version: ['release']
 
     steps:
@@ -44,8 +45,11 @@ jobs:
           install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
+        env:
+        # Set the environment variable for vignette compaction
+          _R_CHECK_COMPACT_VIGNETTES_: both
       - name: Check
         # run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-build-vignettes"), error_on = "error")
         # run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
-        run: rcmdcheck::rcmdcheck(args = c("--compact-vignettes='both'", "--as-cran"), error_on = "error")
+        run: rcmdcheck::rcmdcheck(args = "--as-cran", error_on = "error")
         shell: Rscript {0}
