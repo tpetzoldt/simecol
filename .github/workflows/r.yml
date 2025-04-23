@@ -31,11 +31,14 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
           use-public-rspm: true
+      - name: Set up LaTeX
+        uses: r-lib/actions/setup-tinytex@v2
       - name: Install dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
       - name: Check
+        # run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-build-vignettes"), error_on = "error")
         run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
         shell: Rscript {0}
