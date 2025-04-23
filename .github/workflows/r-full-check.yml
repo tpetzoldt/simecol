@@ -55,9 +55,10 @@ jobs:
         run: |
           brew update
           brew install ghostscript qpdf
+        shell: Rscript {0} # Execute the R command using Rscript
       - name: Install dependencies
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
+          install.packages(c("remotes", "rcmdcheck", "V8"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
       - name: Check
