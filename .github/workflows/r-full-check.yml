@@ -26,8 +26,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        #os: [ubuntu-latest]
         r-version: ['release']
 
     steps:
@@ -37,9 +37,24 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
           use-public-rspm: true
-          setup-deps: true
       - name: Set up LaTeX
         uses: r-lib/actions/setup-tinytex@v2
+      - name: Install system dependencies (gs, qpdf) on Ubuntu
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ghostscript qpdf
+      - name: Install system dependencies (gs, qpdf) on Windows
+        if: ${{ matrix.os == 'windows-latest' }}
+        # Using Chocolatey
+        run: |
+          choco install ghostscript qpdf --no-progress --limit-output || true # Use || true to prevent failure if choco is already installed or fails softly
+      - name: Install system dependencies (gs, qpdf) on macOS
+        if: ${{ matrix.os == 'macos-latest' }}
+        # Using Homebrew
+        run: |
+          brew update
+          brew install ghostscript qpdf
       - name: Install dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
