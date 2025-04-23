@@ -60,11 +60,11 @@ jobs:
           install.packages(c("remotes", "rcmdcheck"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
+      - name: Check
         env:
         # Set the environment variables for vignette compaction
           _R_BUILD_COMPACT_VIGNETTES_: both
           _R_CHECK_COMPACT_VIGNETTES_: both
-      - name: Check
         # run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-build-vignettes"), error_on = "error")
         # run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
         run: rcmdcheck::rcmdcheck(args = "--as-cran", error_on = "error")
