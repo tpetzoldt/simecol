@@ -57,7 +57,7 @@ jobs:
         run: |
           brew update
           # brew install ghostscript qpdf # seems to be already available
-          brew install tidy
+          brew install tidy-html5
           
       - name: Install dependencies
         run: |
