@@ -36,6 +36,7 @@ jobs:
         with:
           r-version: ${{ matrix.r-version }}
           use-public-rspm: true
+          setup-deps: true
       - name: Set up LaTeX
         uses: r-lib/actions/setup-tinytex@v2
       - name: Install dependencies
