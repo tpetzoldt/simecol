@@ -4,7 +4,8 @@
 # documentation.
 #
 # See https://github.com/r-lib/actions/tree/master/examples#readme for
-# additional example workflows available for the R community.
+#
+# modified by tpetzoldt 2025-04-23
 
 name: R-full-check
 
@@ -28,7 +29,8 @@ jobs:
       matrix:
         #os: [ubuntu-latest, windows-latest, macos-latest]
         os: [ubuntu-latest, macos-latest]
-        r-version: [release, devel]
+        #r-version: [release, devel]
+        r-version: [release]
 
     steps:
       - uses: actions/checkout@v4

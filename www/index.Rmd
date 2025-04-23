@@ -2,24 +2,13 @@
 title: "R package simecol"
 output: 
   html_document: 
-    keep_md: yes
-    toc: true
-    toc_float:
-      collapsed: false
-      smooth_scroll: true
 ---
 
-<a href="http://www.r-forge.r-project.org"><img src="r-forge.png" style="position:absolute;top:0px;right:0px;" /></a>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-<hr>
-
-Quick links: [Author](https://www.tu-dresden.de/Members/thomas.petzoldt) +++ [R-Forge Project page](http://r-forge.r-project.org/projects/simecol/) +++ [CRAN](https://cran.r-project.org/package=simecol)
-
-<hr>
 ## Overview
 
 **simecol** (simulation of ecological systems) is a lightweight [R](https://www.r-project.org) package that employs an object oriented paradigm for the implementation of dynamic simulation models.
@@ -34,43 +23,28 @@ The  package is intended to give users (students and scientists) an interactive 
 
 A simulation model is implemented as **simecol** object (**simObj**) with components **main**, holding the main model equations, rules or arbitrary program code, **equations** (optional, a list of possibly nested sub-models or sub-equations ), **parms** with model parameters, **init** with the initial state, **inputs** (optional) for external input data and **times** to define the simulation time and the time steps used.
 
-**simecolModels** is a simulation model collection, together with additional classes, demos and experimental code.
 
-
-  
-
-## Download
-
-### Prerequisites
+## Prerequisites
 
 * simecol is based on [R](https://www.r-project.org), a freely available system for statistical computation and graphics. Current versions are tested with [R](https://www.r-project.org) version 3.0 or above.
-* simecol depends on the [deSolve](http://desolve.r-forge.r-project.org) package for numerical integration.
-* optional: the tcltk package is required for the graphical parameter editing functions
+* simecol depends on the [deSolve](https://cran.r-project.org/package=deSolve) package for numerical integration.
 * Operating systems: All operating systems on which R can be installed: Linux and other Unixes, Windows, Mac
 
-### Installation
+## Installation
 
 The packages can be installed directly from the internet within [R](https://www.r-project.org) or [Rstudio](https://www.rstudio.com/) via the menu or the R command line:
 
-**Stable Version:**
+**Stable Version**
 
 ```{r, eval=FALSE}
 install.packages("simecol")
 ```
 
-**Development versions:**
+**Development version**
 
 ```{r, eval=FALSE}
-install.packages("simecol", repos="http://R-Forge.R-project.org")
-install.packages("simecolModels", repos="http://R-Forge.R-project.org")
-```
-
-**Subversion (svn) access:**
-
-Anonymous SVN access (read only): 
-
-```
-svn checkout svn://svn.r-forge.r-project.org/svnroot/simecol
+library("devtools")
+install_github("https://github.com/tpetzoldt/simecol")
 ```
 
 ## Examples
@@ -128,31 +102,29 @@ plot(sim(conway))
 ```
 ## Documentation
 
-### Package docs
 
 * [Reference Manual](http://cran.r-project.org/web/packages/simecol/simecol.pdf)
 *	[Introduction to the simecol package](https://cran.r-project.org/web/packages/simecol/vignettes/a-simecol-introduction.pdf)
 * [Simecol-Howto: Tips, Tricks and Building Blocks](https://cran.r-project.org/web/packages/simecol/vignettes/b-simecol-howtos.pdf)
 
 
-### Publications
+## Publications
 
 * Petzoldt, T. and K. Rinke (2007). simecol: An Object-Oriented Framework for Ecological Modeling in R. Journal of Statistical Software, 22(9), 1--31. [pdf](http://www.jstatsoft.org/v22/i09)
 * Petzoldt, T. (2003). R as a Simulation Platform in Ecological Modelling. R-News 3(3), 8--16. [pdf](http://cran.r-project.org/doc/Rnews/Rnews_2003-3.pdf)
 * Petzoldt, T., Rinke, K. and Kates, L. (2006) Population ecology modelling with R. A Comparison of Object Oriented Approaches. The R User Conference 2006, Vienna, 2006-06-15 to 2006-06-17 [slides](https://www.r-project.org/conferences/useR-2006/Slides/PetzoldtEtAl.pdf)
 * Petzoldt, T. (2008) Objects, Clones and Collections. Dynamic (Ecological) Models and Scenarios with simecol. The R User Conference 2008, Dortmund, 2008-08-12 -- 2008-08-14. [slides](https://www.r-project.org/conferences/useR-2008/slides/Petzoldt.pdf)
 
-### License
+## License
 
 **simecol**, like R, is free open source software licensed under the [GNU Public License](https://www.gnu.org/licenses/#GPL) (GPL 2.0 or above). The software is provided as is and comes WITHOUT WARRANTY.
 
-### Author
+## Author and support
 
-[Thomas Petzoldt](https://www.tu-dresden.de/Members/thomas.petzoldt), Technische Universität Dresden, Institute of Hydrobiology
+[Thomas Petzoldt](https://www.tu-dresden.de/Members/thomas.petzoldt), TUD Dresden University of Technology, Institute of Hydrobiology
 
-### Support
 
-Please send your questions to the [R-SiG-Dynamic-Models](https://stat.ethz.ch/mailman/listinfo/r-sig-dynamic-models) mailing list.
+Please send your questions to [StackOverflow](https://stackoverflow.com/search?tab=newest&q=[r]%20simecol) or the [R-SiG-Dynamic-Models](https://stat.ethz.ch/mailman/listinfo/r-sig-dynamic-models) mailing list.
 
 <hr>
 
@@ -160,10 +132,6 @@ Please send your questions to the [R-SiG-Dynamic-Models](https://stat.ethz.ch/ma
 
 * Release version of simecol (from CRAN)
     * [binaries, docs, sourcecode](https://cran.r-project.org/package=simecol)
-* Development versions of simecol and simecolModels (from R-Forge)
-    * [project overview page](http://r-forge.r-project.org/projects/simecol/)
-    * [package download](http://r-forge.r-project.org/R/?group_id=146)
-    * [source code](https://r-forge.r-project.org/scm/viewvc.php/pkg/?root=simecol)
 
 * Related work:
     * R package [deSolve](http://desolve.r-forge.r-project.org)
@@ -171,4 +139,4 @@ Please send your questions to the [R-SiG-Dynamic-Models](https://stat.ethz.ch/ma
 
 * [Thomas Petzoldt](https://www.tu-dresden.de/Members/thomas.petzoldt).
 
-<div style="text-align: right">February 25th 2017</div>
+2025-04-23
