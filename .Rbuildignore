@@ -1,3 +1,4 @@
+README.md
 vignettes/jss.cls
 vignettes/jss.bst
 vignettes/a4wide.sty
@@ -11,5 +12,7 @@ inst/WISHLIST
 .*.bbl
 Makedeps
 work
+www
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.github$
