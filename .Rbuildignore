@@ -12,7 +12,7 @@ inst/WISHLIST
 .*.bbl
 Makedeps
 work
-www
+docs
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
