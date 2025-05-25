@@ -68,7 +68,7 @@ CA <- sim(CA)         # takes some time
 lastZ <- out(CA)[[50]]
 maxz  <- max(lastZ)
 
-plot(CA, delay=50, index=90, col=mycolors(maxz+1), axes=F)
+plot(CA, delay=50, index=90, col=mycolors(maxz+1), axes=FALSE)
 
 # image(out(CA)[[2]])
 # parms(CA) <- c(ps = 0.99)

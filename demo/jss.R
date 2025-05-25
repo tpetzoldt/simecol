@@ -126,7 +126,7 @@ main(lv_ef) <-  function (time, init, parms, ...) {
 
 inputs(lv_ef) <-  as.matrix(data.frame(
   time = c(0, 30, 30.1, 100),
-  s.in = c(0,  0,  .5,     .5)
+  s.in = c(0,  0,  0.5,   0.5)
 ))
 
 ###################################################

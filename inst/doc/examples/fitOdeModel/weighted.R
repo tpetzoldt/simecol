@@ -57,8 +57,8 @@ res <- fitOdeModel(cs2, whichpar=c("vm", "km"), obstime, yobs,
 parms(cs2)[whichpar] <- res$par
 
 ## set small external time step for good graphics and simulate again
-times(cs1) <- c(from=0, to=20, by=.1)
-times(cs2) <- c(from=0, to=20, by=.1)
+times(cs1) <- c(from=0, to=20, by=0.1)
+times(cs2) <- c(from=0, to=20, by=0.1)
 ysim1 <- out(sim(cs1))
 ysim2 <- out(sim(cs2))
 

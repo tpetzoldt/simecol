@@ -14,7 +14,7 @@ chemostat <- new("odeModel",
     D  = 0.5,           # dilution rate, 1/d
     S0 = 10             # substrate in inflow, mumol / L
   ),
-  times = c(from = 0, to = 40, by = .5),
+  times = c(from = 0, to = 40, by = 0.5),
   init  = c(X = 10, S = 10), # cells / L; Substrate umol / L
   solver = "lsoda"
 )
