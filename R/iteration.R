@@ -43,7 +43,7 @@ setMethod("iteration", "numeric",
 
 setMethod("iteration", "simObj",
   function(y, times=NULL, func=NULL, parms=NULL, animate=FALSE, ...) {
-    observer = function(init, time, i, out, y){
+    observer <- function(init, time, i, out, y){
       if (is.null(y@observer)) {
         ## default: simply return the state
         init
