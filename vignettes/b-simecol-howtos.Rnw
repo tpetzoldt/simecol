@@ -21,13 +21,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \author{Thomas Petzoldt\\ Technische Universit\"at Dresden}
-\Plainauthor{Thomas Petzoldt} %% comma-separated
+\Plainauthor{Thomas Petzoldt}
 
 \title{\pkg{simecol}-Howto: Tips, Tricks and Building Blocks}
 \Plaintitle{simecol-Howto: Tips, Tricks and Building Blocks}
 % \VignetteIndexEntry{Simecol-Howto: Tips, Tricks and Building Blocks}
 
-\Shorttitle{simecol-Howto} %% a short title (if necessary)
+\Shorttitle{simecol-Howto}
 
 
 %% an abstract and keywords
@@ -711,7 +711,7 @@ res <- fitOdeModel(cs1, whichpar = whichpar,
   control=list(trace = FALSE))
 @
 
-The results are now stored in a list structure \code(res), from which
+The results are now stored in a list structure \code{res}, from which
 parameters, objective (sum of squares) or information about
 convergence can be extracted:
 
