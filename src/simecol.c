@@ -103,14 +103,33 @@ void fill(int* n, int* m, int* i, int* j, double* x,
   }
 }  
 
+/*------------------------*/
 /* non-recursive seedfill */
-void pushSeed(int x, int y, int* xstack, int* ystack, int* ptr, int maxptr) {
+/*------------------------*/
+
+/* Push a seed onto the stack if it is within bounds and there is space */
+void pushSeed(int x, int y, int* xstack, int* ystack, int* ptr, int maxptr, int n, int m) {
+  // Check if the seed is within the image boundaries
+  if (x < 0 || x >= n || y < 0 || y >= m) {
+    // Out-of-bounds seed, do not push
+    return;
+  }
+  
+  // Check if the stack has enough space
+  if (*ptr >= maxptr) {
+    // Stack overflow, log an error and exit gracefully
+    Rprintf("Error: Stack overflow while pushing seed (%d, %d).\n", x, y);
+    error("Stack overflow: Unable to continue seed fill operation.");
+    return;
+  }
+  
+  // Push the seed onto the stack
   xstack[*ptr] = x;
   ystack[*ptr] = y;
-  *ptr = *ptr + 1;
-  if (*ptr > maxptr) 
-    error("fatal error in package simecol: stack size exceeded in seedfill");
+  (*ptr)++;
 }
+
+
 
 int popSeed(int* x, int* y, int* xstack, int* ystack, int* ptr) {
   int ret = FALSE;
@@ -127,79 +146,95 @@ int popSeed(int* x, int* y, int* xstack, int* ystack, int* ptr) {
     boundary pixels.  Return the locations of the leftmost and rightmost 
     filled pixels.*/
 void FillContiguousSpan(int x, int y, double bound, double fill, int *xLeft, int *xRight,
-                        int n, int m, double* xx, double tol) {
-   double col;
-   int i;
-   /* fill pixels to the right until you reach a boundary pixel */
-   i = x;
-   col = getpixelb(n, m, i, y, xx, bound);
-   while (fabs(col - bound) > tol) {
-      setpixel(n, m, i, y, xx, &fill);
-      i++;
-      col = getpixelb(n, m, i, y, xx, bound);
-   }
-   *xRight = i-1;
-   /* fill pixels to the left until you reach a boundary pixel */
-   i = x-1;
-   col = getpixelb(n, m, i, y, xx, bound);
-   while(fabs(col - bound) > tol) {
-      setpixel(n, m, i, y, xx, &fill);
-      i--;
-      col = getpixelb(n, m, i, y, xx, bound);
-   }
-   *xLeft = i+1;
+                                 int n, int m, double* xx, double tol) {
+  int i = x;
+  
+  // Fill right span
+  while (i < n && fabs(getpixelb(n, m, i, y, xx, bound) - bound) > tol) {
+    setpixel(n, m, i, y, xx, &fill);
+    i++;
+  }
+  *xRight = i - 1;
+  
+  // Fill left span
+  i = x - 1;
+  while (i >= 0 && fabs(getpixelb(n, m, i, y, xx, bound) - bound) > tol) {
+    setpixel(n, m, i, y, xx, &fill);
+    i--;
+  }
+  *xLeft = i + 1;
 }
+
 
 
 /* the main routine */
 void FillSeedsOnStack(double bound, double fill, 
                       int n, int m, double* xx,
                       int* xstack, int* ystack, int* ptr, int maxptr, double tol) {
-   double col1=0, col2=0;
-   int x, y;              /* current seed pixel */
-   int xLeft, xRight;     /* current span boundary locations */
-   int i;
+  double col1 = 0, col2 = 0;
+  int x, y;              /* Current seed pixel */
+  int xLeft, xRight;     /* Current span boundary locations */
+  int i;
 
-   while (popSeed(&x, &y, xstack, ystack, ptr)) {
-      if (fabs(getpixelb(n, m, x, y, xx, bound) - bound) > tol) {
-         FillContiguousSpan(x, y, bound, fill, &xLeft, &xRight, n, m, xx, tol);
-         /* single pixel spans handled as a special case in the else clause */
-         if (xLeft != xRight) {
-	     /* handle the row above you */
-            y++;
-            for(i=xLeft+1; i<=xRight; i++) {
-               col1 = getpixelb(n, m, i-1, y, xx, bound);
-               col2 = getpixelb(n, m, i,   y, xx, bound);
-               if (fabs(col1 - bound) > tol && fabs(col1 - fill) > tol 
-                                            && fabs(col2 - bound) <= tol)
-                  pushSeed(i-1, y, xstack, ystack, ptr, maxptr);
+  while (popSeed(&x, &y, xstack, ystack, ptr)) {
+    /* Boundary check for the current seed */
+    if (x < 0 || x >= n || y < 0 || y >= m) continue;
+  
+    /* Check if the current pixel is within the tolerance of the boundary value */
+    if (fabs(getpixelb(n, m, x, y, xx, bound) - bound) > tol) {
+      /* Fill the contiguous span and get its boundaries */
+      FillContiguousSpan(x, y, bound, fill, &xLeft, &xRight, n, m, xx, tol);
+
+      /* Handle multi-pixel spans */
+      if (xLeft != xRight) {
+        /* Handle the row above */
+        if (y + 1 < m) {  // Boundary check for the row above
+          for (i = xLeft + 1; i <= xRight; i++) {
+            col1 = getpixelb(n, m, i - 1, y + 1, xx, bound);
+            col2 = getpixelb(n, m, i, y + 1, xx, bound);
+            if (fabs(col1 - bound) > tol && fabs(col1 - fill) > tol && fabs(col2 - bound) <= tol) {
+              pushSeed(i - 1, y + 1, xstack, ystack, ptr, maxptr, n, m);
             }
-            if (fabs(col2 - bound) > tol && fabs(col2 - fill) > tol)
-               pushSeed(xRight, y, xstack, ystack, ptr, maxptr); 
-
-            /* handle the row below you */
-            y -= 2;
-            for(i=xLeft+1; i<=xRight; i++) {
-               col1 = getpixelb(n, m, i-1, y, xx, bound);
-               col2 = getpixelb(n, m, i,   y, xx, bound);
-               if (fabs(col1 - bound) > tol && fabs(col1 - fill) > tol 
-                                            && fabs(col2 - bound) <= tol)
-                  pushSeed(i-1, y, xstack, ystack, ptr, maxptr);
+          }
+          col2 = getpixelb(n, m, xRight, y + 1, xx, bound);
+          if (fabs(col2 - bound) > tol && fabs(col2 - fill) > tol) {
+            pushSeed(xRight, y + 1, xstack, ystack, ptr, maxptr, n, m);
+          }
+        }
+      
+        /* Handle the row below */
+        if (y - 1 >= 0) {  // Boundary check for the row below
+          for (i = xLeft + 1; i <= xRight; i++) {
+            col1 = getpixelb(n, m, i - 1, y - 1, xx, bound);
+            col2 = getpixelb(n, m, i, y - 1, xx, bound);
+            if (fabs(col1 - bound) > tol && fabs(col1 - fill) > tol && fabs(col2 - bound) <= tol) {
+              pushSeed(i - 1, y - 1, xstack, ystack, ptr, maxptr, n, m);
             }
-            if (fabs(col2 - bound) > tol && fabs(col2 - fill) > tol)
-               pushSeed(xRight, y, xstack, ystack, ptr, maxptr); 
-         } else {
-            col1 = getpixelb(n, m, xLeft, y+1, xx, bound);
-            col2 = getpixelb(n, m, xLeft, y-1, xx, bound);
-            if (fabs(col1 - fill) > tol)
-               pushSeed(xLeft, y+1, xstack, ystack, ptr, maxptr);
-            if (fabs(col2 - fill) > tol)
-               pushSeed(xLeft, y-1, xstack, ystack, ptr, maxptr);
-         }
-
-      } /* end if (GetPixel) */
-   }  /* end while (popSeed) */
+          }
+          col2 = getpixelb(n, m, xRight, y - 1, xx, bound);
+          if (fabs(col2 - bound) > tol && fabs(col2 - fill) > tol) {
+            pushSeed(xRight, y - 1, xstack, ystack, ptr, maxptr, n, m);
+          }
+        }
+      } else {
+        /* Handle single-pixel spans */
+        if (y + 1 < m) {  // Boundary check for the row above
+          col1 = getpixelb(n, m, xLeft, y + 1, xx, bound);
+          if (fabs(col1 - fill) > tol) {
+            pushSeed(xLeft, y + 1, xstack, ystack, ptr, maxptr, n, m);
+          }
+        }
+        if (y - 1 >= 0) {  // Boundary check for the row below
+          col2 = getpixelb(n, m, xLeft, y - 1, xx, bound);
+          if (fabs(col2 - fill) > tol) {
+            pushSeed(xLeft, y - 1, xstack, ystack, ptr, maxptr, n, m);
+          }
+        }
+      }
+    }
+  }
 }
+
 
 /* start routine for seedfill */
 void c_seedfill(int* n, int* m, int* i, int* j, double* x, 
@@ -212,9 +247,13 @@ void c_seedfill(int* n, int* m, int* i, int* j, double* x,
   ystack = (int *) R_alloc(*n * *m, sizeof(int));
   maxptr = *m * *n;
   ptr = &p;
-  pushSeed(*i, *j, xstack, ystack, ptr, maxptr);
+  pushSeed(*i, *j, xstack, ystack, ptr, maxptr, *n, *m);
   FillSeedsOnStack(*bcol, *fcol, *n, *m, x, xstack, ystack, ptr, maxptr, *tol);
 }
+
+/* ------------------------*/
+/* neighbourhood functions */
+/* ------------------------*/
 
 /* basic neighbourhood function for Conway's Game of Life */
 void c_eightneighbours(int* n, int* m, double* x, double* y) {
