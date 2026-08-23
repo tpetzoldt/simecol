@@ -1,174 +1,184 @@
-/* 
-   Seedfill for images and numeric matrices
-   Th. Petzoldt
-*/
-
-#include <R.h>
-
-#define MIN(X,Y) ((X) < (Y) ? (X) : (Y))
-#define MAX(X,Y) ((X) > (Y) ? (X) : (Y))
+/*
+ Seedfill for images and numeric matrices
+ Th. Petzoldt
+ 
+ Matrix layout: column-major, as used by R.
+ Element (i, j) with i = row (0..n-1), j = column (0..m-1)
+ is stored at x[i + n * j].
+ */
 
 #include <R.h>
 #include <math.h>
 
-// Stack operations
-void pushSeed(int x, int y, int* xstack, int* ystack, int* ptr, int maxptr, int n, int m) {
-  if (x < 0 || x >= n || y < 0 || y >= m) return;
+/* ---- bounds test -------------------------------------------------------- */
+int isInside(int n, int m, int i, int j) {
+  return (0 <= i && i < n && 0 <= j && j < m);
+}
+
+/* ---- single, defensive pixel accessor ----------------------------------- */
+/* Out-of-range reads return the boundary colour, so the image edge behaves
+ like a natural wall in boundary-fill mode. */
+double getpixel(int n, int m, int i, int j, double* x, double bcol) {
+  if (isInside(n, m, i, j))
+    return x[i + n * j];
+  else
+    return bcol;
+}
+
+
+void setpixel(int n, int m, int i, int j, double* x, double val) {
+  if (isInside(n, m, i, j))
+    x[i + n * j] = val;
+}
+
+/* ---- stack operations --------------------------------------------------- */
+void pushSeed(int i, int j, int* istack, int* jstack, int* ptr, int maxptr,
+              int n, int m) {
+  if (!isInside(n, m, i, j)) return;
   if (*ptr >= maxptr) {
-    Rprintf("Error: Stack overflow while pushing seed (%d, %d).\n", x, y);
-    return;
+    error("Stack overflow while pushing seed (%d, %d).\n", i, j);
   }
-  xstack[*ptr] = x;
-  ystack[*ptr] = y;
+  istack[*ptr] = i;
+  jstack[*ptr] = j;
   (*ptr)++;
 }
 
-int popSeed(int* x, int* y, int* xstack, int* ystack, int* ptr) {
+int popSeed(int* i, int* j, int* istack, int* jstack, int* ptr) {
   if (*ptr > 0) {
     (*ptr)--;
-    *x = xstack[*ptr];
-    *y = ystack[*ptr];
+    *i = istack[*ptr];
+    *j = jstack[*ptr];
     return 1;
   }
   return 0;
 }
 
-int isInside(int n, int m, int i, int j, double* x) {
-  if ((0 <= i) & (i < n) & (0 <= j) & (j < m))  
-    return TRUE; 
-  else 
-    return FALSE;
+/* ---- stop predicate ----------------------------------------------------- */
+/* mode 0 = boundary-fill: stop at the boundary colour.
+   mode 1 = seed-fill    : stop at anything that is not the seed colour.     */
+
+int is_stop(double pixel, double bcol, double seed_color, double fill,
+            double tol, int mode) {
+  if (fabs(pixel - fill) <= tol) return 1;      /* already filled (marker) -> stop, BOTH modes */
+  if (mode == 0)
+    return fabs(pixel - bcol) <= tol;           /* boundary: stop at boundary colour */
+  else
+    return fabs(pixel - seed_color) > tol;      /* flood: stop at non-seed colour */
 }
 
 
-/* version 1: basic version */
-double getpixel(int n, int m, int i, int j, double* x) {
-  if (isInside(n, m, i, j, x)) {
-    return x[i + n * j];
-  } else {
-    return 0;
-  }
-}
-
-// Pixel access helpers
-double getpixelb(int n, int m, int x, int y, double* xx) {
-  return xx[x + n * y];
-}
-
-void setpixel(int n, int m, int x, int y, double* xx, double* val) {
-  xx[x + n * y] = *val;
-}
+// int is_stop(double pixel, double bcol, double seed_color, double fill,
+//             double tol, int mode) {
+//   if (mode == 0) {                              /* boundary fill */
+//     return fabs(pixel - bcol) <= tol;           /* stop ONLY at boundary */
+//   } else {                                      /* flood / seed fill */
+//     if (fabs(pixel - fill) <= tol) return 1;    /* already filled -> stop */
+//     return fabs(pixel - seed_color) > tol;      /* stop at non-seed colour */
+//   }
+// }
 
 
-// mode: 0 = boundary-fill, 1 = seed-fill
-int is_stop(double pixel, double bcol, double seed_color, double tol, int mode) {
-  if (mode == 0) { // Boundary-fill
-    return fabs(pixel - bcol) <= tol;
-  } else { // Seed-fill
-    return fabs(pixel - seed_color) > tol;
-  }
-}
 
-
-/* fill pixels to the left and right of the seed pixel until you hit 
-    boundary pixels.  Return the locations of the leftmost and rightmost 
-    filled pixels.*/
-void FillContiguousSpan(int x, int y, double bcol, double seed_color, double fill, 
-                        int n, int m, double* xx, double tol, int mode, int* xLeft, int* xRight) {
-  int i = x;
-  // Fill right
-  while (i < n && !is_stop(getpixelb(n, m, i, y, xx), bcol, seed_color, tol, mode)) {
-    setpixel(n, m, i, y, xx, &fill);
+/* ---- fill one contiguous horizontal span -------------------------------- */
+/* Fills cells to the left and right of the seed until a stop cell is met.
+ Returns the leftmost and rightmost filled row indices in *iLeft / *iRight.  */
+void FillContiguousSpan(int i0, int j, double bcol, double seed_color,
+                        double fill, int n, int m, double* x, double tol,
+                        int mode, int* iLeft, int* iRight) {
+  int i = i0;
+  /* fill "downwards" in row index (i increasing) */
+  while (i < n && !is_stop(getpixel(n, m, i, j, x, bcol),
+                           bcol, seed_color, fill, tol, mode)) {
+    setpixel(n, m, i, j, x, fill);
     i++;
   }
-  *xRight = i - 1;
-  // Fill left
-  i = x - 1;
-  while (i >= 0 && !is_stop(getpixelb(n, m, i, y, xx), bcol, seed_color, tol, mode)) {
-    setpixel(n, m, i, y, xx, &fill);
+  *iRight = i - 1;
+  /* fill "upwards" in row index (i decreasing) */
+  i = i0 - 1;
+  while (i >= 0 && !is_stop(getpixel(n, m, i, j, x, bcol),
+                            bcol, seed_color, fill, tol, mode)) {
+    setpixel(n, m, i, j, x, fill);
     i--;
   }
-  *xLeft = i + 1;
+  *iLeft = i + 1;
 }
 
-
-/* the main routine */
-void FillSeedsOnStack(double bcol, double seed_color, double fill, 
-                      int n, int m, double* xx,
-                      int* xstack, int* ystack, int* ptr, int maxptr, double tol, int mode) {
-  double col1 = 0, col2 = 0;
-  int x, y, xLeft, xRight, i;
+/* ---- main non-recursive fill ------------------------------------------- */
+void FillSeedsOnStack(double bcol, double seed_color, double fill,
+                      int n, int m, double* x,
+                      int* istack, int* jstack, int* ptr, int maxptr,
+                      double tol, int mode) {
+  int i, j, iLeft, iRight, k;
+  double col1, col2;
   
-  while (popSeed(&x, &y, xstack, ystack, ptr)) {
-    if (x < 0 || x >= n || y < 0 || y >= m) continue;
-    double pixel = getpixelb(n, m, x, y, xx);
-    if (!is_stop(pixel, bcol, seed_color, tol, mode)) {
-      FillContiguousSpan(x, y, bcol, seed_color, fill, n, m, xx, tol, mode, &xLeft, &xRight);
+  while (popSeed(&i, &j, istack, jstack, ptr)) {
+    if (!isInside(n, m, i, j)) continue;
+    
+    if (!is_stop(getpixel(n, m, i, j, x, bcol),
+                 bcol, seed_color, fill, tol, mode)) {
       
-      if (xLeft != xRight) {
-        // Row above
-        if (y + 1 < m) {
-          for (i = xLeft + 1; i <= xRight; i++) {
-            col1 = getpixelb(n, m, i - 1, y + 1, xx);
-            col2 = getpixelb(n, m, i, y + 1, xx);
-            if (!is_stop(col1, bcol, seed_color, tol, mode) &&
-                is_stop(col2, bcol, seed_color, tol, mode)) {
-              pushSeed(i - 1, y + 1, xstack, ystack, ptr, maxptr, n, m);
-            }
+      FillContiguousSpan(i, j, bcol, seed_color, fill, n, m, x, tol, mode,
+                         &iLeft, &iRight);
+      
+      if (iLeft != iRight) {
+        /* column above (j + 1) */
+        if (j + 1 < m) {
+          for (k = iLeft + 1; k <= iRight; k++) {
+            col1 = getpixel(n, m, k - 1, j + 1, x, bcol);
+            col2 = getpixel(n, m, k,     j + 1, x, bcol);
+            if (!is_stop(col1, bcol, seed_color, fill, tol, mode) &&
+                is_stop(col2, bcol, seed_color, fill, tol, mode))
+              pushSeed(k - 1, j + 1, istack, jstack, ptr, maxptr, n, m);
           }
-          col2 = getpixelb(n, m, xRight, y + 1, xx);
-          if (!is_stop(col2, bcol, seed_color, tol, mode)) {
-            pushSeed(xRight, y + 1, xstack, ystack, ptr, maxptr, n, m);
-          }
+          col2 = getpixel(n, m, iRight, j + 1, x, bcol);
+          if (!is_stop(col2, bcol, seed_color, fill, tol, mode))
+            pushSeed(iRight, j + 1, istack, jstack, ptr, maxptr, n, m);
         }
-        // Row below
-        if (y - 1 >= 0) {
-          for (i = xLeft + 1; i <= xRight; i++) {
-            col1 = getpixelb(n, m, i - 1, y - 1, xx);
-            col2 = getpixelb(n, m, i, y - 1, xx);
-            if (!is_stop(col1, bcol, seed_color, tol, mode) &&
-                is_stop(col2, bcol, seed_color, tol, mode)) {
-              pushSeed(i - 1, y - 1, xstack, ystack, ptr, maxptr, n, m);
-            }
+        /* column below (j - 1) */
+        if (j - 1 >= 0) {
+          for (k = iLeft + 1; k <= iRight; k++) {
+            col1 = getpixel(n, m, k - 1, j - 1, x, bcol);
+            col2 = getpixel(n, m, k,     j - 1, x, bcol);
+            if (!is_stop(col1, bcol, seed_color, fill, tol, mode) &&
+                is_stop(col2, bcol, seed_color, fill, tol, mode))
+              pushSeed(k - 1, j - 1, istack, jstack, ptr, maxptr, n, m);
           }
-          col2 = getpixelb(n, m, xRight, y - 1, xx);
-          if (!is_stop(col2, bcol, seed_color, tol, mode)) {
-            pushSeed(xRight, y - 1, xstack, ystack, ptr, maxptr, n, m);
-          }
+          col2 = getpixel(n, m, iRight, j - 1, x, bcol);
+          if (!is_stop(col2, bcol, seed_color, fill, tol, mode))
+            pushSeed(iRight, j - 1, istack, jstack, ptr, maxptr, n, m);
         }
       } else {
-        // Single-pixel span
-        if (y + 1 < m) {
-          col1 = getpixelb(n, m, xLeft, y + 1, xx);
-          if (!is_stop(col1, bcol, seed_color, tol, mode)) {
-            pushSeed(xLeft, y + 1, xstack, ystack, ptr, maxptr, n, m);
-          }
+        /* single-cell span */
+        if (j + 1 < m) {
+          col1 = getpixel(n, m, iLeft, j + 1, x, bcol);
+          if (!is_stop(col1, bcol, seed_color, fill, tol, mode))
+            pushSeed(iLeft, j + 1, istack, jstack, ptr, maxptr, n, m);
         }
-        if (y - 1 >= 0) {
-          col2 = getpixelb(n, m, xLeft, y - 1, xx);
-          if (!is_stop(col2, bcol, seed_color, tol, mode)) {
-            pushSeed(xLeft, y - 1, xstack, ystack, ptr, maxptr, n, m);
-          }
+        if (j - 1 >= 0) {
+          col2 = getpixel(n, m, iLeft, j - 1, x, bcol);
+          if (!is_stop(col2, bcol, seed_color, fill, tol, mode))
+            pushSeed(iLeft, j - 1, istack, jstack, ptr, maxptr, n, m);
         }
       }
     }
   }
 }
 
-
-
-/* entry routine for seedfill */
-void c_seedfill(int* n, int* m, int* i, int* j, double* x, 
-                double* fcol, double* bcol, double* tol, double* seed_color, int* mode) {
-  int* xstack;
-  int* ystack;
+/* ---- entry point called from R ----------------------------------------- */
+void c_seedfill(int* n, int* m, int* i, int* j, double* x,
+                double* fcol, double* bcol, double* tol,
+                double* seed_color, int* mode) {
+  int* istack;
+  int* jstack;
   int p = 0, *ptr;
   int maxptr = (*n) * (*m);
-  xstack = (int *) R_alloc(maxptr, sizeof(int));
-  ystack = (int *) R_alloc(maxptr, sizeof(int));
+  
+  istack = (int *) R_alloc(maxptr, sizeof(int));
+  jstack = (int *) R_alloc(maxptr, sizeof(int));
   ptr = &p;
-  pushSeed(*i, *j, xstack, ystack, ptr, maxptr, *n, *m);
-  FillSeedsOnStack(*bcol, *seed_color, *fcol, *n, *m, x, xstack, ystack, ptr, maxptr, *tol, *mode);
+  
+  pushSeed(*i, *j, istack, jstack, ptr, maxptr, *n, *m);
+  FillSeedsOnStack(*bcol, *seed_color, *fcol, *n, *m, x,
+                   istack, jstack, ptr, maxptr, *tol, *mode);
 }
-
 

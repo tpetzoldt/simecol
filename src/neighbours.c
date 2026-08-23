@@ -22,6 +22,28 @@ int imin(int x, int y) {
   }
 }
 
+/*  generalized boundaries (open / torus / [todo: reflection]). */
+
+double xgetpixel(int n, int m, int i, int j, int bound, double* x) {
+  double ret = 0;
+  
+  if ((0 <= i) & (i < n) & (0 <= j) & (j < m)) {
+    ret = x[i + n * j];
+  } else {
+    int ii = i, jj = j;
+    // bit set == torus; bottom, left, top, right
+    if (bound & 1) jj = MIN(jj, m-1);
+    if (bound & 2) ii = MIN(ii, n-1);
+    if (bound & 4) jj = MAX(jj, 0);
+    if (bound & 8) ii = MAX(ii, 0);
+    // open boundaries or torus
+    if (isInside(n, m, ii, jj)) {
+      ret = x[((ii + n) % n) + n * ((jj + m) % m)]; // modulo
+    }
+  }
+  return ret;
+}
+
   
 /* basic neighbourhood function for Conway's Game of Life */
 void c_eightneighbours(int* n, int* m, double* x, double* y) {

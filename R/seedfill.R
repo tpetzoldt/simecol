@@ -1,55 +1,66 @@
 ## R interface to seedfill ("color" fill with double precision numbers)
 ## for matrices, useful for grid-based models and spatial statistics
 
-seedfill <- function(z, x = 1, y = 1, fcol = 0, bcol = NULL, tol = 1e-6) {
+seedfill <- function(z, x = 1, y = 1, fcol = 0, bcol = 1, tol = 1e-6,
+                     mode = c("boundary", "flood")) {
   # Input validation
-  if (!is.matrix(z)) stop("z must be a matrix")
-  if (!is.numeric(z)) stop("z must be a numeric matrix")
-  if (!is.numeric(x) || length(x) != 1) stop("x must be a single numeric value")
-  if (!is.numeric(y) || length(y) != 1) stop("y must be a single numeric value")
-  if (!is.numeric(fcol)) stop("fcol must be numeric")
-  if (!is.numeric(tol)) stop("tol must be numeric")
+  if (!is.matrix(z) || !is.numeric(z))        stop("z must be a numeric matrix")
+  if (!is.numeric(x) || length(x) != 1)       stop("x must be a single numeric value")
+  if (!is.numeric(y) || length(y) != 1)       stop("y must be a single numeric value")
+  if (!is.numeric(fcol) || length(fcol) != 1) stop("fcol must be a single numeric value")
+  if (!is.numeric(bcol) || length(bcol) != 1) stop("bcol must be a single numeric value")
+  if (!is.numeric(tol)  || length(tol)  != 1) stop("tol must be a single numeric value")
+  
+  mode  <- match.arg(mode)
+  imode <- switch(mode, boundary = 0L, flood = 1L)
+  
+  # Impossible, finite fill marker (largest representable double; .C-safe, not Inf)
+  marker <- .Machine$double.xmax
+  
+  if (any(is.infinite(z)))
+    stop("z must not contain Inf/-Inf.")
+  if (any(z == marker))
+    stop("z must not contain .Machine$double.xmax (reserved for masking).")
+  if (fcol == marker)
+    stop("fcol must not be .Machine$double.xmax (reserved for masking).")
   
   n <- dim(z)[1]
   m <- dim(z)[2]
   
   # Index validation
-  if (x < 1 || x > n || y < 1 || y > m) {
+  if (x < 1 || x > n || y < 1 || y > m)
     stop("x and y must be within the bounds of the matrix")
-  }
   
-  # Dynamically determine the seed color (value at the seed point)
+  # Seed colour: original value at the start cell (used by flood mode)
   seed_color <- z[x, y]
   
-  # Determine the mode based on bcol
-  if (is.null(bcol) || (length(bcol) == 1 && is.na(bcol))) {
-    # Mode B: Seed-based fill (stop when color differs from seed)
-    mode <- 1L
-    bcol <- 0  # Boundary color is irrelevant in this mode
+  # Mode-specific friendly guards (no-op fills)
+  if (imode == 0L) {
+    if (abs(seed_color - bcol) <= tol)
+      warning("Seed point lies on the boundary colour; nothing to fill.")
   } else {
-    # Mode A: Boundary-based fill (stop at bcol)
-    mode <- 0L
+    if (abs(seed_color - fcol) <= tol)
+      warning("Seed colour already equals the fill colour; nothing to fill.")
   }
   
-  # If the seed color is already the fill color, return the matrix as is
-  if (seed_color == fcol) {
-    return(z)
-  }
+  # Single call: C fills from the seed with the impossible MARKER (not fcol),
+  # stopping natively at bcol (boundary mode) or at any non-seed value (flood).
+  zz <- .C(c_seedfill,
+           as.integer(n),
+           as.integer(m),
+           as.integer(x - 1),        # zero-based indexing
+           as.integer(y - 1),
+           z          = as.double(z),
+           as.double(marker),        # fill with the impossible marker
+           as.double(bcol),          # boundary colour (used in boundary mode)
+           as.double(tol),
+           as.double(seed_color),    # seed colour (used in flood mode)
+           as.integer(imode),        # 0 = boundary, 1 = flood
+           PACKAGE = "simecol")$z
   
-  # Call the C function
-  filled_z <- .C("c_seedfill",
-                 as.integer(n),
-                 as.integer(m),
-                 as.integer(x - 1),  # Convert to zero-based indexing
-                 as.integer(y - 1),  # Convert to zero-based indexing
-                 z = as.double(z),
-                 as.double(fcol),    # Final fill color
-                 as.double(bcol),    # Boundary color (used only in Mode A)
-                 as.double(tol),     # Tolerance for comparisons
-                 as.double(seed_color),  # Seed color (used only in Mode B)
-                 as.integer(mode),   # Mode: 0 = boundary-based, 1 = seed-based
-                 PACKAGE = "simecol")$z
+  zz <- matrix(zz, nrow = n, ncol = m)
   
-  # Return the result as a matrix
-  return(matrix(filled_z, nrow = n, ncol = m))
+  # Map the marker back to the requested fill colour
+  zz[zz == marker] <- fcol
+  zz
 }
