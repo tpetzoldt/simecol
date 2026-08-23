@@ -1,6 +1,5 @@
 /* 
-   Helper functions for the simecol package
-   seedfill for images and numeric matrices
+   Seedfill for images and numeric matrices
    Th. Petzoldt
 */
 

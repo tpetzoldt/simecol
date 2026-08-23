@@ -1,6 +1,5 @@
 /* 
- Helper functions for the simecol package
- - neighbour functions for cellular automata
+ Neighbour functions for cellular automata
  Th. Petzoldt
  */
 
