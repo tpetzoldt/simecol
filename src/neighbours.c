@@ -26,27 +26,12 @@ int imin(int x, int y) {
  so the final array access is always in bounds.                          */
 double xgetpixel(int n, int m, int i, int j, int bound, double* x) {
   int ii = i, jj = j;
-  
-  /* rows (i) */
-  if (i >= n) {                                  /* bottom */
-  if (bound & 1) ii = i % n;                   /*   torus: wrap */
-  else           return 0.0;                   /*   open : dead cell */
-  }
-  if (i < 0) {                                   /* top */
-  if (bound & 4) ii = ((i % n) + n) % n;
-    else           return 0.0;
-  }
-  
-  /* cols (j) */
-  if (j < 0) {                                   /* left */
-  if (bound & 2) jj = ((j % m) + m) % m;
-    else           return 0.0;
-  }
-  if (j >= m) {                                  /* right */
-  if (bound & 8) jj = j % m;
-    else           return 0.0;
-  }
-  
+  if (i >= n) { if (bound & 1) ii = i % n;             else { return 0.0; } }
+  if (i <  0) { if (bound & 4) ii = ((i % n) + n) % n; else { return 0.0; } }
+  if (j <  0) { if (bound & 2) jj = ((j % m) + m) % m; else { return 0.0; } }
+  if (j >= m) { if (bound & 8) jj = j % m;             else { return 0.0; } }
+  //if (i < 0 || i >= n)   /* should NEVER print in cylinder mode */
+  //  Rprintf("VERTICAL WRAP LEAK: i=%d j=%d bound=%d ii=%d jj=%d\n", i,j,bound,ii,jj);
   return x[ii + n * jj];
 }
 
