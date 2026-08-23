@@ -61,17 +61,22 @@ setMethod("plot", c("odeModel", "odeModel"),
 )
 
 setMethod("plot", c("gridModel", "missing"),
-  function(x, y, index=1:length(x@out), delay=0, ...) {
-   	if (is.null(x@out)) 
+  function(x, y, index = 1:length(x@out), delay = 0, ...) {
+    if (is.null(x@out))
       stop("Please simulate the model before plotting", call. = FALSE)
-    oldpar <- par(no.readonly=TRUE)
+    oldpar <- par(no.readonly = TRUE)
     on.exit(par(oldpar))
+            
+    dots <- list(...)
+    if (is.null(dots$useRaster)) dots$useRaster <- TRUE   # default, caller can override
+            
     for (i in index) {
-      dev.hold()  # double buffering
-      image(x@out[[i]], main=i, ...)
-      Sys.sleep(0.001 * delay)
+      dev.hold()
+      do.call(image, c(list(x@out[[i]], main = i), dots))
       dev.flush()
+      if (delay > 0) Sys.sleep(0.001 * delay)
     }
+    invisible(x)
   }
 )
 
