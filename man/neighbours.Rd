@@ -1,7 +1,7 @@
 \name{neighbours}
 \alias{neighbours}
 \alias{neighbors}
-\title{Count Number of Neighbours on a Rectangular Grid.}
+\title{Count Number of Neighbours on a Rectangular Grid}
 
 \description{This is the base function for the simulation
   of deterministic and stochastic cellular automata on rectangular
@@ -14,37 +14,47 @@
   \item{x}{Matrix. The cellular grid, in which each cell can have a specific
     state value, e.g. zero (dead cell) or one (living cell) or the age
     of an individual.}
-  \item{state}{A value, whose existence is checked within the
-    neighbourhood of each cell.
-  }
+  \item{state}{A value whose occurrence is counted within the
+    neighbourhood of each cell. If \code{state = NULL} (the default), all
+    non-zero cells are counted, i.e. the grid is treated as binary.}
   \item{wdist}{The neighbourhood weight matrix. It has to be a square matrix
-    with an odd number of rows and columns).
-  }
-  \item{tol}{Tolerance value for the comparision of \code{state} with the
-    state of each cell. If \code{tol} is a large value, then more than
-    one state can be checked simultaneously.}
-  \item{bounds}{A vector with either one or four values specifying
-    the type of boundaries, where 0 means open boundaries and 1 torus-like
-    boundaries. The values are specified in the order bottom, left, 
-    top, right.}
+    with an odd number of rows and columns. If \code{wdist = NULL} (the
+    default), a 3 by 3 matrix of ones with a zero centre is used, which
+    counts the eight direct (Moore) neighbours.}
+  \item{tol}{Tolerance value for the comparison of \code{state} with the
+    state of each cell. A cell is counted if its state differs from
+    \code{state} by less than \code{tol}. If \code{tol} is a large value,
+    then more than one state can be checked simultaneously.}
+  \item{bounds}{A vector specifying the type of boundaries, where 0 means
+    open boundaries and 1 torus-like (periodic) boundaries. Either one or
+    four values can be given; a single value is applied to all four edges,
+    four values are given in the order bottom, left, top, right. Shorter
+    vectors are recycled to length four.}
 }
 \seealso{
   \code{\link{seedfill}}, \code{\link{eightneighbours}}, \code{\link{conway}}
 }
 \details{
   The performance of the function depends on the size of the matrices and the
-  type of the boundaries, where open boundaries are faster than torus like
+  type of the boundaries, where open boundaries are faster than torus-like
   boundaries. Function \code{\link{eightneighbours}} is even faster.
+
+  With open boundaries, cells beyond the grid edge are treated as absent and
+  do not contribute to the weighted sum. With torus-like boundaries, the grid
+  wraps around, so that the opposite edge becomes the neighbour. Individual
+  edges can be set independently, e.g. \code{bounds = c(0, 1, 0, 1)} connects
+  the left and right edges only, forming a cylinder.
 }
 \value{
-  A matrix with the same structure as \code{x} with the weighted
-  sum of the neigbours with values between \code{state - tol} and
-  \code{state + tol}.
+  A matrix with the same structure as \code{x} containing, for each cell, the
+  weighted sum (using \code{wdist}) of the neighbouring cells whose state
+  differs from \code{state} by less than \code{tol}. If the central element of
+  \code{wdist} is non-zero, the focal cell contributes to its own sum.
 }
 
 \examples{
 ## ==================================================================
-## Demonstration of the neighborhood function alone
+## Demonstration of the neighbourhood function alone
 ## ==================================================================
 
 ## weight matrix for neighbourhood determination
@@ -54,7 +64,7 @@ wdist <- matrix(c(0.5,0.5,0.5,0.5,0.5,
                   0.5,1.0,1.0,1.0,0.5,
                   0.5,0.5,0.5,0.5,0.5), nrow=5)
 
-## state matrix                  
+## state matrix
 n <- 20; m <- 20
 x <- matrix(rep(0, m * n), nrow = n)
 
@@ -75,15 +85,15 @@ image(matrix(neighbours(x, wdist = wdist, bounds = 0), nrow = n))
 image(matrix(neighbours(x, wdist = wdist, bounds = 1), nrow = n))
 ## cylinder (left and right boundaries connected)
 image(matrix(neighbours(x, wdist = wdist, bounds = c(0, 1, 0, 1)), nrow = n))
-par(opar) # reset graphics area                  
-                  
+par(opar) # reset graphics area
+
 ## ==================================================================
 ## The following example demonstrates a "plain implementation" of a
 ## stochastic cellular automaton i.e. without the simecol structure.
 ##
 ## A simecol implementation of this can be found in
 ## the example directory of this package (file: stoch_ca.R).
-## ==================================================================                  
+## ==================================================================
 mycolors <- function(n) {
   col <- c("wheat", "darkgreen")
   if (n>2) col <- c(col, heat.colors(n - 2))

@@ -5,7 +5,9 @@ int isInside(int n, int m, int i, int j);
 
 double getpixel(int n, int m, int i, int j, double* x);
 
-void setpixel(int n, int m, int i, int j, double* x, double* fcol);
+double getpixelb(int n, int m, int i, int j, double* x, double b);
+
+void setpixel(int n, int m, int i, int j, double* x, double val); 
 
 int imax(int x, int y);
   

@@ -25,6 +25,11 @@ double getpixel(int n, int m, int i, int j, double* x, double bcol) {
     return bcol;
 }
 
+/* wall boundary: out-of-range reads as the given boundary colour b */
+double getpixelb(int n, int m, int i, int j, double* x, double b) {
+  return isInside(n, m, i, j) ? x[i + n * j] : b;
+}
+
 
 void setpixel(int n, int m, int i, int j, double* x, double val) {
   if (isInside(n, m, i, j))
