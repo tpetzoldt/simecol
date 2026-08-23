@@ -1,14 +1,13 @@
 ## R interface to seedfill ("color" fill with double precision numbers)
 ## for matrices, useful for grid-based models and spatial statistics
 
-seedfill <- function(z, x = 1, y = 1, fcol = 0, bcol = 1, tol = 1e-6) {
+seedfill <- function(z, x = 1, y = 1, fcol = 0, bcol = NULL, tol = 1e-6) {
   # Input validation
   if (!is.matrix(z)) stop("z must be a matrix")
   if (!is.numeric(z)) stop("z must be a numeric matrix")
   if (!is.numeric(x) || length(x) != 1) stop("x must be a single numeric value")
   if (!is.numeric(y) || length(y) != 1) stop("y must be a single numeric value")
   if (!is.numeric(fcol)) stop("fcol must be numeric")
-  if (!is.numeric(bcol)) stop("bcol must be numeric")
   if (!is.numeric(tol)) stop("tol must be numeric")
   
   n <- dim(z)[1]
@@ -19,33 +18,38 @@ seedfill <- function(z, x = 1, y = 1, fcol = 0, bcol = 1, tol = 1e-6) {
     stop("x and y must be within the bounds of the matrix")
   }
   
-  # Use .Machine$double.xmax as the initial temporary fill color
-  ffcol <- .Machine$double.xmax
+  # Dynamically determine the seed color (value at the seed point)
+  seed_color <- z[x, y]
   
-  # Check if .Machine$double.xmax exists in the matrix
-  if (any(z == ffcol, na.rm = TRUE)) {
-    # If conflict exists, dynamically select an alternative ffcol
-    repeat {
-      ffcol <- runif(1, min = -1e6, max = 1e6)  # Generate a random value
-      if (!any(z == ffcol, na.rm = TRUE)) break  # Ensure it does not exist in z
-    }
+  # Determine the mode based on bcol
+  if (is.null(bcol) || (length(bcol) == 1 && is.na(bcol))) {
+    # Mode B: Seed-based fill (stop when color differs from seed)
+    mode <- 1L
+    bcol <- 0  # Boundary color is irrelevant in this mode
+  } else {
+    # Mode A: Boundary-based fill (stop at bcol)
+    mode <- 0L
+  }
+  
+  # If the seed color is already the fill color, return the matrix as is
+  if (seed_color == fcol) {
+    return(z)
   }
   
   # Call the C function
-  z <- .C(c_seedfill,
-          as.integer(n),
-          as.integer(m),
-          as.integer(x - 1),  # Convert to zero-based indexing
-          as.integer(y - 1),  # Convert to zero-based indexing
-          z = as.double(z),
-          as.double(ffcol),
-          as.double(bcol),
-          as.double(tol),
-          PACKAGE = "simecol")$z
-  
-  # Replace temporary fill color with the desired fill color
-  z <- ifelse(z == ffcol, fcol, z)
+  filled_z <- .C("c_seedfill",
+                 as.integer(n),
+                 as.integer(m),
+                 as.integer(x - 1),  # Convert to zero-based indexing
+                 as.integer(y - 1),  # Convert to zero-based indexing
+                 z = as.double(z),
+                 as.double(fcol),    # Final fill color
+                 as.double(bcol),    # Boundary color (used only in Mode A)
+                 as.double(tol),     # Tolerance for comparisons
+                 as.double(seed_color),  # Seed color (used only in Mode B)
+                 as.integer(mode),   # Mode: 0 = boundary-based, 1 = seed-based
+                 PACKAGE = "simecol")$z
   
   # Return the result as a matrix
-  return(matrix(z, nrow = n, ncol = m))
+  return(matrix(filled_z, nrow = n, ncol = m))
 }

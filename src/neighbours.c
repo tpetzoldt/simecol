@@ -5,6 +5,23 @@
 
 #include <R.h>
 #include "simecol.h"
+
+int imax(int x, int y) {
+  if (x > y) {
+    return x;
+  } else {
+    return y;
+  }
+}
+
+int imin(int x, int y) {
+  if (x < y) {
+    return x;
+  } else {
+    return y;
+  }
+}
+
   
 /* basic neighbourhood function for Conway's Game of Life */
 void c_eightneighbours(int* n, int* m, double* x, double* y) {
