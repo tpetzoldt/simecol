@@ -1,7 +1,6 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
-
 /* .C calls */
 extern void c_eightneighbours(void *, void *, void *, void *);
 extern void c_neighbours(void *, void *, void *, void *, void *, void *, void *, void *);

@@ -9,32 +9,7 @@
 
 #include <R.h>
 #include <math.h>
-
-/* ---- bounds test -------------------------------------------------------- */
-int isInside(int n, int m, int i, int j) {
-  return (0 <= i && i < n && 0 <= j && j < m);
-}
-
-/* ---- single, defensive pixel accessor ----------------------------------- */
-/* Out-of-range reads return the boundary colour, so the image edge behaves
- like a natural wall in boundary-fill mode. */
-double getpixel(int n, int m, int i, int j, double* x, double bcol) {
-  if (isInside(n, m, i, j))
-    return x[i + n * j];
-  else
-    return bcol;
-}
-
-/* wall boundary: out-of-range reads as the given boundary colour b */
-double getpixelb(int n, int m, int i, int j, double* x, double b) {
-  return isInside(n, m, i, j) ? x[i + n * j] : b;
-}
-
-
-void setpixel(int n, int m, int i, int j, double* x, double val) {
-  if (isInside(n, m, i, j))
-    x[i + n * j] = val;
-}
+#include "util.h"
 
 /* ---- stack operations --------------------------------------------------- */
 void pushSeed(int i, int j, int* istack, int* jstack, int* ptr, int maxptr,

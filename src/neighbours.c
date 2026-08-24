@@ -1,10 +1,10 @@
 /*
  Neighbour functions for cellular automata
  Th. Petzoldt
- */
+*/
 
 #include <R.h>
-#include "simecol.h"
+#include "util.h"
 
 int imax(int x, int y) {
   return (x > y) ? x : y;
@@ -12,27 +12,6 @@ int imax(int x, int y) {
 
 int imin(int x, int y) {
   return (x < y) ? x : y;
-}
-
-/* ---- generalized boundaries (open / torus / [todo: reflection]) ---------
- Per edge:  bit set = torus (wrap);  bit unset = open (out-of-range -> 0).
- Bit order (matching the R wrapper packing sum(bounds * c(1,2,4,8)) and the
- neighbours() documentation order bottom, left, top, right):
- bit 1 = bottom (i >= n)
- bit 2 = left   (j <  0)
- bit 4 = top    (i <  0)
- bit 8 = right  (j >= m)
- Every out-of-range index either wraps to a valid cell or returns 0.0,
- so the final array access is always in bounds.                          */
-double xgetpixel(int n, int m, int i, int j, int bound, double* x) {
-  int ii = i, jj = j;
-  if (i >= n) { if (bound & 1) ii = i % n;             else { return 0.0; } }
-  if (i <  0) { if (bound & 4) ii = ((i % n) + n) % n; else { return 0.0; } }
-  if (j <  0) { if (bound & 2) jj = ((j % m) + m) % m; else { return 0.0; } }
-  if (j >= m) { if (bound & 8) jj = j % m;             else { return 0.0; } }
-  //if (i < 0 || i >= n)   /* should NEVER print in cylinder mode */
-  //  Rprintf("VERTICAL WRAP LEAK: i=%d j=%d bound=%d ii=%d jj=%d\n", i,j,bound,ii,jj);
-  return x[ii + n * jj];
 }
 
 
@@ -43,11 +22,11 @@ void c_eightneighbours(int* n, int* m, double* x, double* y) {
   double c = 0;
   for (int i = 0; i < nn; i++) {
     for (int j = 0; j < mm; j++) {
-      c = getpixelb(nn, mm, i+1, j,   x, 0.0) + getpixelb(nn, mm, i,   j+1, x, 0.0) +
-        getpixelb(nn, mm, i-1, j,   x, 0.0) + getpixelb(nn, mm, i,   j-1, x, 0.0) +
-        getpixelb(nn, mm, i+1, j+1, x, 0.0) + getpixelb(nn, mm, i+1, j-1, x, 0.0) +
-        getpixelb(nn, mm, i-1, j+1, x, 0.0) + getpixelb(nn, mm, i-1, j-1, x, 0.0);
-        setpixel(nn, mm, i, j, y, c);      /* by value */
+      c = getpixel(nn, mm, i+1, j,   x, 0.0) + getpixel(nn, mm, i,   j+1, x, 0.0) +
+          getpixel(nn, mm, i-1, j,   x, 0.0) + getpixel(nn, mm, i,   j-1, x, 0.0) +
+          getpixel(nn, mm, i+1, j+1, x, 0.0) + getpixel(nn, mm, i+1, j-1, x, 0.0) +
+          getpixel(nn, mm, i-1, j+1, x, 0.0) + getpixel(nn, mm, i-1, j-1, x, 0.0);
+          setpixel(nn, mm, i, j, y, c); // by value
     }
   }
 }
@@ -76,13 +55,13 @@ void c_neighbours(int* n, int* m, double* x, double* y,
       c = 0; 
       for (int ii = imax(-d, -i); ii <= imin(nn - i, d); ii++) {
         for (int jj = imax(-d, -j); jj <= imin(mm - j, d); jj++) {
-          s = getpixelb(nn, mm, i + ii, j + jj, x, 0.0);
+          s = getpixel(nn, mm, i + ii, j + jj, x, 0.0);
           if (fabs(s - dstate) < dtol) {
             c += wdist[ii + d + nd * (jj + d)];
           }
         }
       }
-      setpixel(nn, mm, i, j, y, c);      /* by value */
+      setpixel(nn, mm, i, j, y, c); // by value
     }
   }
 }
@@ -105,8 +84,8 @@ void c_xneighbours(int* n, int* m,
   d = (int)floor(*ndist / 2);
   
   /* interior region: cells whose entire window stays in bounds */
-  int i_lo = d, i_hi = nn - d;      /* interior rows:    [d, nn-d) */
-  int j_lo = d, j_hi = mm - d;      /* interior columns: [d, mm-d) */
+  int i_lo = d, i_hi = nn - d;      // interior rows:    [d, nn-d)
+  int j_lo = d, j_hi = mm - d;      // interior columns: [d, mm-d)
   
   for (i = 0; i < nn; i++) {
     int interior_row = (i >= i_lo && i < i_hi);

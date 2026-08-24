@@ -1,5 +1,5 @@
 Package: simecol 
-Version: 0.10-0
+Version: 0.91-0
 Title: Simulation of Ecological (and Other) Dynamic Systems
 Authors@R: c(person("Thomas","Petzoldt", role = c("aut", "cre"),
                      email = "thomas.petzoldt@tu-dresden.de",

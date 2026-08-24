@@ -1,3 +1,7 @@
+0.91-0
+o complete rewrite of the C functions.
+  Increased stability and performance.
+
 0.9-1
 o removed unnecessary ROR ID
 
