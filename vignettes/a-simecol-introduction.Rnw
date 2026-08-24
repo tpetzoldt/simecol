@@ -61,16 +61,14 @@ Please refer to the original publication when citing this work.
   Institut f\"ur Hydrobiologie\\
   Technische Universit\"at Dresden\\
   01062 Dresden, Germany\\
-  E-mail: \email{thomas.petzoldt@tu-dresden.de}\\
-  URL: \url{https://tu-dresden.de/Members/thomas.petzoldt/}\\
+  E-mail: \email{thomas.petzoldt@tu-dresden.de}
   \\
   Karsten Rinke\\
   Helmholtz-Centre for Environmental Research - UFZ\\
   Department of Lake Research\\
   Br\"uckstr. 3a\\
   39114 Magdeburg, Germany\\
-  E-mail: \email{karsten.rinke@ufz.de}\\
-  URL: \url{https://www.ufz.de/index.php?en=19635}
+  E-mail: \email{karsten.rinke@ufz.de}
 }
 
 %% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
