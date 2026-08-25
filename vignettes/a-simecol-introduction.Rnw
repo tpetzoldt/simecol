@@ -168,8 +168,8 @@ We want to stress that we don not intend to establish yet another
 simulation system. Complete simulation systems are numerous and
 well-established for specified applications, e.g.\
 STELLA\footnote{\url{https://www.iseesystems.com/}},
-Berkeley Madonna\footnote{\url{https://www.berkeleymadonna.com/}},
-VENSIM\footnote{\url{https://www.vensim.com/}},
+Berkeley Madonna\footnote{\url{https://berkeley-madonna.myshopify.com/}},
+VENSIM\footnote{\texttt{https://vensim.com/}},
 EcoBeaker\footnote{https://www.ecobeaker.com/} or the GNU open
 source system ECOBAS \citep{Benz2001a}. A comprehensive overview about
 software used in ecological modeling is given elsewhere e.g.\ at
@@ -183,12 +183,12 @@ templates for ordinary differential and delay-differential equations
 \citep{Gurney1998}, an object-oriented \proglang{C++} framework like
 OSIRIS \citep{Mooij1996} for individual-based models or the
 \proglang{Objective C} framework
-SWARM\footnote{\url{https://www.swarm.org/}} for agent-based simulations.
+SWARM\footnote{\url{http://www.swarm.org/wiki/Main_Page}} for agent-based simulations.
 
 An alternative approach is the use of high-level programming environments and
 matrix oriented languages like
 MATLAB\footnote{\url{https://www.mathworks.com/}} or \proglang{R}
-\citep{Rcore2006}. Such languages allow a more interactive development
+\citep{Rcore2026}. Such languages allow a more interactive development
 cycle, compared to compiled languages, and outweigh their performance
 handicap by efficient algorithms and compiled libraries for numerics
 and data management. Both openness and interactivity have made the
