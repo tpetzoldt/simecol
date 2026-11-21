@@ -11,8 +11,8 @@ inst/WISHLIST
 .*\.d
 .*.bbl
 Makedeps
-work
 docs
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^\_local$
