@@ -1,0 +1,459 @@
+# R package “simecol” (Simulation in Ecology)
+
+## Overview
+
+**simecol** (simulation of ecological systems) is a lightweight
+[R](https://www.r-project.org) package that employs an object oriented
+paradigm for the implementation of dynamic simulation models.
+
+The package is intended to give users (students and scientists) an
+interactive environment to implement, distribute, simulate and document
+basic and advanced ecological models without the need to write long
+simulation programs. An object oriented approach is used to provide a
+consistent but still flexible and extensible way to implement simulation
+models of different types:
+
+- ordinary differential equation (ODE) models,
+- non-spatial individual-based models,
+- grid-oriented individual-based models,
+- particle diffusion-type / random walk models
+- and more.
+
+A simulation model is implemented as **simecol** object (**simObj**)
+with components **main**, holding the main model equations, rules or
+arbitrary program code, **equations** (optional, a list of possibly
+nested sub-models or sub-equations ), **parms** with model parameters,
+**init** with the initial state, **inputs** (optional) for external
+input data and **times** to define the simulation time and the time
+steps used.
+
+**simecolModels** is a simulation model collection, together with
+additional classes, demos and experimental code.
+
+## Download
+
+### Prerequisites
+
+- simecol is based on [R](https://www.r-project.org), a freely available
+  system for statistical computation and graphics. Current versions are
+  tested with [R](https://www.r-project.org) version 3.0 or above.
+- simecol depends on the
+  [deSolve](https://cran.r-project.org/package=deSolve) package for
+  numerical integration.
+- Operating systems: All operating systems on which R can be installed:
+  Linux and other Unixes, Windows, Mac
+
+### Installation
+
+The packages can be installed directly from the internet within
+[R](https://www.r-project.org) or [Rstudio](https://www.rstudio.com/)
+via the menu or the R command line:
+
+**Stable Version**
+
+``` r
+
+install.packages("simecol")
+```
+
+**Development version**
+
+``` r
+
+library("devtools")
+install_github("https://github.com/tpetzoldt/simecol")
+```
+
+## Examples
+
+### Lotka-Volterra
+
+``` r
+
+library("simecol")
+data(lv, package="simecol")
+plot(sim(lv))
+```
+
+### Conway’s Game of Life
+
+``` r
+
+library("simecol")
+data(conway, package="simecol")
+plot(sim(conway))
+m <- matrix(0, 40, 40)
+m[5:35,19:21] <-1
+init(conway) <- m
+sim(conway, animate=TRUE, delay=100, col=c("white", "green"), axes=FALSE)
+```
+
+### Template
+
+The following example shows that the structure of a model object is just
+a template.
+
+``` r
+
+library("simecol")
+conway <- new("gridModel",
+    main = function(time, init, parms) {
+        x   <- init
+        srv <- parms$srv
+        gen <- parms$gen
+        n   <- nrow(x)
+        m   <- ncol(x)
+        nb  <- eightneighbours(x)
+        ## survival rule
+        xsrv <- ifelse(x > 0 & (nb %in% srv), 1, 0)
+        ## generation rule
+        xgen <- ifelse(x == 0 & (nb %in% gen), 1, 0)
+        x    <- as.numeric((xgen + xsrv)>0)
+        dim(x) <- c(n,m)
+    x
+    },
+    parms = list(srv=c(2, 3), gen=3),
+    times = c(from=1, to=10, by=1),
+    init = matrix(round(runif(40*40)), nrow=40, ncol=40),
+    solver = "iteration"
+)
+
+plot(sim(conway))
+```
+
+### Publications
+
+- Petzoldt, T. and K. Rinke (2007). simecol: An Object-Oriented
+  Framework for Ecological Modeling in R. Journal of Statistical
+  Software, 22(9), 1–31. [pdf](http://www.jstatsoft.org/v22/i09)
+- Petzoldt, T. (2003). R as a Simulation Platform in Ecological
+  Modelling. R-News 3(3), 8–16.
+  [pdf](http://cran.r-project.org/doc/Rnews/Rnews_2003-3.pdf)
+- Petzoldt, T., Rinke, K. and Kates, L. (2006) Population ecology
+  modelling with R. A Comparison of Object Oriented Approaches. The R
+  User Conference 2006, Vienna, 2006-06-15 to 2006-06-17
+  [slides](https://www.r-project.org/conferences/useR-2006/Slides/PetzoldtEtAl.pdf)
+- Petzoldt, T. (2008) Objects, Clones and Collections. Dynamic
+  (Ecological) Models and Scenarios with simecol. The R User Conference
+  2008, Dortmund, 2008-08-12 – 2008-08-14.
+  [slides](https://www.r-project.org/conferences/useR-2008/slides/Petzoldt.pdf)
+
+### License
+
+**simecol**, like R, is free open source software licensed under the
+[GNU Public License](https://www.gnu.org/licenses/#GPL) (GPL 2.0 or
+above). The software is provided as is and comes WITHOUT WARRANTY.
+
+### Author
+
+[Thomas Petzoldt](https://www.tu-dresden.de/Members/thomas.petzoldt),
+Technische Universit?t Dresden, Institute of Hydrobiology
+
+### Support
+
+Please send your questions to the
+[R-SiG-Dynamic-Models](https://stat.ethz.ch/mailman/listinfo/r-sig-dynamic-models)
+mailing list.
+
+2026-11-21
+
+# Package index
+
+## All functions
+
+- [`conway`](https://tpetzoldt.github.io/simecol/reference/CA.md) :
+  Stochastic Cellular Automaton
+- [`addtoenv()`](https://tpetzoldt.github.io/simecol/reference/addtoenv.md)
+  : Add Functions from a Non-nested List of Named Functions to a Common
+  Environment
+- [`approxTime()`](https://tpetzoldt.github.io/simecol/reference/approxTime.md)
+  [`approxTime1()`](https://tpetzoldt.github.io/simecol/reference/approxTime.md)
+  : Linear Interpolation with Complete Matrices or Data Frames
+- [`as.simObj(`*`<list>`*`)`](https://tpetzoldt.github.io/simecol/reference/as.simObj.md)
+  [`as.list(`*`<simObj>`*`)`](https://tpetzoldt.github.io/simecol/reference/as.simObj.md)
+  : Coerce simObj Objects to Lists and Vice-Versa
+- [`chemostat`](https://tpetzoldt.github.io/simecol/reference/chemostat.md)
+  : Chemostat Model
+- [`conway`](https://tpetzoldt.github.io/simecol/reference/conway.md) :
+  The Classical Coway's Game of Life
+- [`diffusion`](https://tpetzoldt.github.io/simecol/reference/diffusion.md)
+  : A Random Walk Particle Diffusion Model
+- [`editParms()`](https://tpetzoldt.github.io/simecol/reference/editParms.md)
+  [`editTimes()`](https://tpetzoldt.github.io/simecol/reference/editParms.md)
+  [`editInit()`](https://tpetzoldt.github.io/simecol/reference/editParms.md)
+  : Edit \`parms', \`init' or \`times' Slot of \`simecol' Objects
+- [`eightneighbours()`](https://tpetzoldt.github.io/simecol/reference/eightneighbours.md)
+  [`eightneighbors()`](https://tpetzoldt.github.io/simecol/reference/eightneighbours.md)
+  : Count Number of Neighbours in a Rectangular Cellular Grid.
+- [`fitOdeModel()`](https://tpetzoldt.github.io/simecol/reference/fitOdeModel.md)
+  : Parameter Fitting for odeModel Objects
+- [`fromtoby()`](https://tpetzoldt.github.io/simecol/reference/fromtoby.md)
+  : Create Regular Sequence from 'from-to-by' Vector
+- [`initialize(`*`<simObj>`*`)`](https://tpetzoldt.github.io/simecol/reference/initialize-methods.md)
+  : Methods for Function \`initialize' in Package \`simecol'
+- [`iteration()`](https://tpetzoldt.github.io/simecol/reference/iteration.md)
+  : Discrete Simulation
+- [`listOrNULL-class`](https://tpetzoldt.github.io/simecol/reference/listOrNULL.md)
+  [`listOrdata.frame-class`](https://tpetzoldt.github.io/simecol/reference/listOrNULL.md)
+  [`functionOrNULL-class`](https://tpetzoldt.github.io/simecol/reference/listOrNULL.md)
+  [`numericOrlist-class`](https://tpetzoldt.github.io/simecol/reference/listOrNULL.md)
+  [`functionOrcharacter-class`](https://tpetzoldt.github.io/simecol/reference/listOrNULL.md)
+  : Helpful Union Classes
+- [`lv`](https://tpetzoldt.github.io/simecol/reference/lv.md) :
+  Lotka-Volterra Predator-Prey Model
+- [`lv3`](https://tpetzoldt.github.io/simecol/reference/lv3.md) :
+  Lotka-Volterra-Type Model with Resource, Prey and Predator
+- [`mixNamedVec()`](https://tpetzoldt.github.io/simecol/reference/mixNamedVec.md)
+  : Mix Two Named Vectors, Resolving Name Conflicts
+- [`coef(`*`<modelFit>`*`)`](https://tpetzoldt.github.io/simecol/reference/modelFit-methods.md)
+  [`deviance(`*`<modelFit>`*`)`](https://tpetzoldt.github.io/simecol/reference/modelFit-methods.md)
+  [`summary(`*`<modelFit>`*`)`](https://tpetzoldt.github.io/simecol/reference/modelFit-methods.md)
+  [`` `$`( ``*`<modelFit>`*`)`](https://tpetzoldt.github.io/simecol/reference/modelFit-methods.md)
+  [`` `[`( ``*`<modelFit>`*`)`](https://tpetzoldt.github.io/simecol/reference/modelFit-methods.md)
+  [`` `[[`( ``*`<modelFit>`*`)`](https://tpetzoldt.github.io/simecol/reference/modelFit-methods.md)
+  : Show Results of Model Fits
+- [`modelFit-class`](https://tpetzoldt.github.io/simecol/reference/modelFit.md)
+  : Class of Fitted Model Parameters
+- [`neighbours()`](https://tpetzoldt.github.io/simecol/reference/neighbours.md)
+  [`neighbors()`](https://tpetzoldt.github.io/simecol/reference/neighbours.md)
+  : Count Number of Neighbours on a Rectangular Grid
+- [`observer()`](https://tpetzoldt.github.io/simecol/reference/observer.md)
+  [`` `observer<-`() ``](https://tpetzoldt.github.io/simecol/reference/observer.md)
+  : Get or Set an Observer Functions to an \`simObj' Object
+- [`odeModel()`](https://tpetzoldt.github.io/simecol/reference/odeModel.md)
+  [`gridModel()`](https://tpetzoldt.github.io/simecol/reference/odeModel.md)
+  [`rwalkModel()`](https://tpetzoldt.github.io/simecol/reference/odeModel.md)
+  [`indbasedModel()`](https://tpetzoldt.github.io/simecol/reference/odeModel.md)
+  : Generating-functions (Constructors) to Create Objects of Classes
+  \`odeModel', \`rwalkModel' and \`gridModel'.
+- [`p.constrain()`](https://tpetzoldt.github.io/simecol/reference/p.constrain.md)
+  [`p.unconstrain()`](https://tpetzoldt.github.io/simecol/reference/p.constrain.md)
+  : Transform Data Between Unconstrained and Box-constrained Scale
+- [`parms()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `parms<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`main()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `main<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`equations()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `equations<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`init()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `init<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`inputs()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `inputs<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`times()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `times<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`solver()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `solver<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`initfunc()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `initfunc<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`out()`](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  [`` `out<-`() ``](https://tpetzoldt.github.io/simecol/reference/parms.md)
+  : Accessor Functions for \`simObj' Objects
+- [`pcu()`](https://tpetzoldt.github.io/simecol/reference/pcuseries.md)
+  [`pcuseries()`](https://tpetzoldt.github.io/simecol/reference/pcuseries.md)
+  [`alpha2rho()`](https://tpetzoldt.github.io/simecol/reference/pcuseries.md)
+  [`rho2alpha()`](https://tpetzoldt.github.io/simecol/reference/pcuseries.md)
+  : Generate Plackett Bivariate Random Numbers
+- [`peaks()`](https://tpetzoldt.github.io/simecol/reference/peaks.md) :
+  Find Peaks Within xy-Data
+- [`plot(`*`<simObj>`*`,`*`<missing>`*`)`](https://tpetzoldt.github.io/simecol/reference/plot-methods.md)
+  [`plot(`*`<odeModel>`*`,`*`<missing>`*`)`](https://tpetzoldt.github.io/simecol/reference/plot-methods.md)
+  [`plot(`*`<odeModel>`*`,`*`<odeModel>`*`)`](https://tpetzoldt.github.io/simecol/reference/plot-methods.md)
+  [`plot(`*`<gridModel>`*`,`*`<missing>`*`)`](https://tpetzoldt.github.io/simecol/reference/plot-methods.md)
+  [`plot(`*`<rwalkModel>`*`,`*`<missing>`*`)`](https://tpetzoldt.github.io/simecol/reference/plot-methods.md)
+  : Methods for Function plot in Package \`simecol'
+- [`print(`*`<simObj>`*`)`](https://tpetzoldt.github.io/simecol/reference/print-methods.md)
+  : Methods for Function \`print' in Package \`simecol'
+- [`sEdit()`](https://tpetzoldt.github.io/simecol/reference/sEdit.md) :
+  Simple editing
+- [`seedfill()`](https://tpetzoldt.github.io/simecol/reference/seedfill.md)
+  : Color Fill Algorithm
+- [`sim()`](https://tpetzoldt.github.io/simecol/reference/sim.md) :
+  Simulation of 'simObj' model objects
+- [`simecol-package`](https://tpetzoldt.github.io/simecol/reference/simecol-package.md)
+  [`simecol`](https://tpetzoldt.github.io/simecol/reference/simecol-package.md)
+  [`simObj`](https://tpetzoldt.github.io/simecol/reference/simecol-package.md)
+  [`simObj-class`](https://tpetzoldt.github.io/simecol/reference/simecol-package.md)
+  [`odeModel-class`](https://tpetzoldt.github.io/simecol/reference/simecol-package.md)
+  [`gridModel-class`](https://tpetzoldt.github.io/simecol/reference/simecol-package.md)
+  [`rwalkModel-class`](https://tpetzoldt.github.io/simecol/reference/simecol-package.md)
+  [`indbasedModel-class`](https://tpetzoldt.github.io/simecol/reference/simecol-package.md)
+  : Simulation of Ecological (and Other) Dynamic Systems
+- [`ssqOdeModel()`](https://tpetzoldt.github.io/simecol/reference/ssqOdeModel.md)
+  : Sum of Squares Between odeModel and Data
+- [`upca`](https://tpetzoldt.github.io/simecol/reference/upca.md) : The
+  Uniform Period Chaotic Amplitude Model
+
+# R package simecol
+
+## Overview
+
+**simecol** (simulation of ecological systems) is a lightweight
+[R](https://www.r-project.org) package that employs an object oriented
+paradigm for the implementation of dynamic simulation models.
+
+The package is intended to give users (students and scientists) an
+interactive environment to implement, distribute, simulate and document
+basic and advanced ecological models without the need to write long
+simulation programs. An object oriented approach is used to provide a
+consistent but still flexible and extensible way to implement simulation
+models of different types:
+
+- ordinary differential equation (ODE) models,
+- non-spatial individual-based models,
+- grid-oriented individual-based models,
+- particle diffusion-type / random walk models
+- and more.
+
+A simulation model is implemented as **simecol** object (**simObj**)
+with components **main**, holding the main model equations, rules or
+arbitrary program code, **equations** (optional, a list of possibly
+nested sub-models or sub-equations ), **parms** with model parameters,
+**init** with the initial state, **inputs** (optional) for external
+input data and **times** to define the simulation time and the time
+steps used.
+
+## Prerequisites
+
+- simecol is based on [R](https://www.r-project.org), a freely available
+  system for statistical computation and graphics. Current versions are
+  tested with [R](https://www.r-project.org) version 3.0 or above.
+- simecol depends on the
+  [deSolve](https://cran.r-project.org/package=deSolve) package for
+  numerical integration.
+- Operating systems: All operating systems on which R can be installed:
+  Linux and other Unixes, Windows, Mac
+
+## Installation
+
+The packages can be installed directly from the internet within
+[R](https://www.r-project.org) or [Rstudio](https://www.rstudio.com/)
+via the menu or the R command line:
+
+**Stable Version**
+
+``` r
+
+install.packages("simecol")
+```
+
+**Development version**
+
+``` r
+
+library("devtools")
+install_github("https://github.com/tpetzoldt/simecol")
+```
+
+## Examples
+
+### Lotka-Volterra
+
+``` r
+
+library("simecol")
+data(lv, package="simecol")
+plot(sim(lv))
+```
+
+### Conway’s Game of Life
+
+``` r
+
+library("simecol")
+data(conway, package="simecol")
+plot(sim(conway))
+m <- matrix(0, 40, 40)
+m[5:35,19:21] <-1
+init(conway) <- m
+sim(conway, animate=TRUE, delay=100, col=c("white", "green"), axes=FALSE)
+```
+
+### Template
+
+The following example shows that the structure of a model object is just
+a template.
+
+``` r
+
+library("simecol")
+conway <- new("gridModel",
+    main = function(time, init, parms) {
+        x   <- init
+        srv <- parms$srv
+        gen <- parms$gen
+        n   <- nrow(x)
+        m   <- ncol(x)
+        nb  <- eightneighbours(x)
+        ## survival rule
+        xsrv <- ifelse(x > 0 & (nb %in% srv), 1, 0)
+        ## generation rule
+        xgen <- ifelse(x == 0 & (nb %in% gen), 1, 0)
+        x    <- as.numeric((xgen + xsrv)>0)
+        dim(x) <- c(n,m)
+    x
+    },
+    parms = list(srv=c(2, 3), gen=3),
+    times = c(from=1, to=10, by=1),
+    init = matrix(round(runif(40*40)), nrow=40, ncol=40),
+    solver = "iteration"
+)
+
+plot(sim(conway))
+```
+
+## Documentation
+
+- [Reference
+  Manual](http://cran.r-project.org/web/packages/simecol/simecol.pdf)
+- [Introduction to the simecol
+  package](https://cran.r-project.org/web/packages/simecol/vignettes/a-simecol-introduction.pdf)
+- [Simecol-Howto: Tips, Tricks and Building
+  Blocks](https://cran.r-project.org/web/packages/simecol/vignettes/b-simecol-howtos.pdf)
+
+## Publications
+
+- Petzoldt, T. and K. Rinke (2007). simecol: An Object-Oriented
+  Framework for Ecological Modeling in R. Journal of Statistical
+  Software, 22(9), 1–31. [pdf](http://www.jstatsoft.org/v22/i09)
+- Petzoldt, T. (2003). R as a Simulation Platform in Ecological
+  Modelling. R-News 3(3), 8–16.
+  [pdf](http://cran.r-project.org/doc/Rnews/Rnews_2003-3.pdf)
+- Petzoldt, T., Rinke, K. and Kates, L. (2006) Population ecology
+  modelling with R. A Comparison of Object Oriented Approaches. The R
+  User Conference 2006, Vienna, 2006-06-15 to 2006-06-17
+  [slides](https://www.r-project.org/conferences/useR-2006/Slides/PetzoldtEtAl.pdf)
+- Petzoldt, T. (2008) Objects, Clones and Collections. Dynamic
+  (Ecological) Models and Scenarios with simecol. The R User Conference
+  2008, Dortmund, 2008-08-12 – 2008-08-14.
+  [slides](https://www.r-project.org/conferences/useR-2008/slides/Petzoldt.pdf)
+
+## License
+
+**simecol**, like R, is free open source software licensed under the
+[GNU Public License](https://www.gnu.org/licenses/#GPL) (GPL 2.0 or
+above). The software is provided as is and comes WITHOUT WARRANTY.
+
+## Author and support
+
+[Thomas Petzoldt](https://www.tu-dresden.de/Members/thomas.petzoldt),
+TUD Dresden University of Technology, Institute of Hydrobiology
+
+Please send your questions to
+[StackOverflow](https://stackoverflow.com/search?tab=newest&q=%5Br%5D%20simecol)
+or the
+[R-SiG-Dynamic-Models](https://stat.ethz.ch/mailman/listinfo/r-sig-dynamic-models)
+mailing list.
+
+------------------------------------------------------------------------
+
+## Links
+
+- Release version of simecol (from CRAN)
+  - [binaries, docs,
+    sourcecode](https://cran.r-project.org/package=simecol)
+- Related work:
+  - R package [deSolve](http://desolve.r-forge.r-project.org)
+  - R package [FME](http://fme.r-forge.r-project.org/)
+- [Thomas Petzoldt](https://www.tu-dresden.de/Members/thomas.petzoldt).
+
+2025-04-23
