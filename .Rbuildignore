@@ -16,3 +16,6 @@ docs
 ^\.Rproj\.user$
 ^\.github$
 ^\_local$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

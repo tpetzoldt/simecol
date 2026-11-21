@@ -110,7 +110,7 @@ diffusion <- rwalkModel(
     speed <- speed * inputs[i.j]
 
     ## Rule 2: Random Walk
-    a  <- (a + 2 * pi / runif(a)) %% (2 * pi)
+    a  <- (a + 2 * pi / runif(a))  # (2 * pi) ?
     dx <- speed * cos(a)
     dy <- speed * sin(a)
     x  <- x + dx
