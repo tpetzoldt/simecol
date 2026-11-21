@@ -1,4 +1,4 @@
-This is the package repository of package "simecol" (Simulation in Ecology).
+## R package "simecol" (Simulation in Ecology) <img src="man/figures/logo.png" align="right" alt="simecol logo" />
 
 You can inspect the code, follow the development or download and test
 parts of the project and, most important, give feedback.
@@ -13,5 +13,5 @@ For details, see:
 Petzoldt, T., & Rinke, K. (2007). simecol: An Object-Oriented Framework for Ecological Modeling in R. Journal of Statistical Software, 22(9), 1–31. https://doi.org/10.18637/jss.v022.i09
 
 
-2024-08-13
+2026-11-21
 

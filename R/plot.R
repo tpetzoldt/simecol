@@ -61,31 +61,42 @@ setMethod("plot", c("odeModel", "odeModel"),
 )
 
 setMethod("plot", c("gridModel", "missing"),
-  function(x, y, index = 1:length(x@out), delay = 0, ...) {
-    if (is.null(x@out))
-      stop("Please simulate the model before plotting", call. = FALSE)
-    oldpar <- par(no.readonly = TRUE)
-    on.exit(par(oldpar))
+          function(x, y, index = 1:length(x@out), delay = 0, ...) {
+            if (is.null(x@out)) {
+              stop("Please simulate the model before plotting", call. = FALSE)
+            }
             
-    dots <- list(...)
-    if (is.null(dots$useRaster)) dots$useRaster <- TRUE   # default, caller can override
+            dots <- list(...)
+            if (is.null(dots$useRaster)) {
+              dots$useRaster <- TRUE
+            }
             
-    for (i in index) {
-      dev.hold()
-      do.call(image, c(list(x@out[[i]], main = i), dots))
-      dev.flush()
-      if (delay > 0) Sys.sleep(0.001 * delay)
-    }
-    invisible(x)
-  }
+            simecol_main <- ""
+            if (!is.null(dots$main)) {
+              simecol_main <- dots$main
+              dots$main <- NULL
+            }
+            
+            for (i in index) {
+              main <- paste0(simecol_main, " i=", i)
+              dev.hold()
+              do.call(image, c(list(x@out[[i]], main = main), dots))
+              dev.flush()
+              if (delay > 0) {
+                Sys.sleep(0.001 * delay)
+              }
+            }
+            
+            invisible(x)
+          }
 )
 
 setMethod("plot", c("rwalkModel", "missing"),
   function(x, y, index=1:length(x@out), delay=0, ...) {
    	if (is.null(x@out)) 
       stop("Please simulate the model before plotting", call. = FALSE)
-    oldpar <- par(no.readonly=TRUE)
-    on.exit(par(oldpar))
+    #oldpar <- par(no.readonly=TRUE)
+    #on.exit(par(oldpar))
     for (i in index) {
       dev.hold()   # double buffering
       dat <- x@out[[i]]

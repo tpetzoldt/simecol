@@ -1,0 +1,282 @@
+---
+title: "Ecological Modeling with R: The simecol Package"
+author: "Thomas Petzoldt"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+vignette: >
+  %\VignetteIndexEntry{Ecological Modeling with R: The simecol Package}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4
+)
+library(simecol)
+```
+
+## Introduction: R as a Modeling Tool
+
+Ecological modeling spans a wide spectrum of mathematical and computational paradigms—from simple differential equation systems to spatially explicit cellular automata and complex individual-based models (IBMs). Historically, ecological modeling workflows were often fragmented across multiple environments:
+
+1.  **Phase 1:** Simulation models written in compiled languages (e.g., FORTRAN), paired with spreadsheet software (e.g., Excel) for data analysis and plotting.
+2.  **Phase 2:** Simulation models implemented in general-purpose languages (e.g., Java or C++), using **R** solely for statistical analysis and visualization.
+3.  **Phase 3:** End-to-end workflows—data processing, simulation modeling, and visualization—conducted directly within **R**.
+4.  **Phase 4:** Hybrid, reproducible architectures where **R** serves as the high-level modeling, visualization, and user-interface layer, optionally delegating performance-critical routines to compiled C/C++ code, connecting to SQL databases, and embedding documentation via literate programming (historically Sweave, now Quarto/R Markdown).
+
+### Why R?
+
+Originally developed as an open-source dialect of the **S** language (created at AT&T Bell Laboratories by John Chambers) by Ross Ihaka and Robert Gentleman, **R** has become a standard environment for computational statistics and scientific computing. Its key strengths for ecological modeling include:
+
+- A matrix- and vector-oriented programming paradigm suited for numerical operations.
+- A comprehensive, publication-quality graphics system.
+- Seamless extensibility via R packages as well as compiled C, C++, and Fortran routines.
+- Built-in documentation systems and literate programming tools for reproducible research.
+
+### The Pitfalls of Ad-Hoc Scripting
+
+Despite its strengths, writing ecological models in R without a unifying structure often leads to familiar software engineering problems (*"When all you have is a hammer, everything looks like a nail"*):
+
+- **Fragmented coding styles:** Three modelers can easily produce seven incompatible script structures.
+- **Lack of documentation:** When research deadlines press, model structure and assumptions remain buried in ad-hoc scripts.
+- **Copy-and-paste proliferation:** Exploring new scenarios often results in duplicating entire script files. Introducing a single new parameter may require hacking multiple sections of code, and reading someone else's script frequently feels harder than rewriting it from scratch.
+
+------------------------------------------------------------------------
+
+## Design Philosophy of `simecol`
+
+The `simecol` package (**sim**ulation of **ecol**ogical systems) addresses these challenges by providing a lightweight, object-oriented framework for implementing, sharing, and simulating ecological models in R.
+
+### Prototypes and Family Resemblance
+
+Inspired by Ludwig Wittgenstein's concepts of *family resemblance* (*Familienähnlichkeit*) and prototype-based thinking, `simecol` avoids rigid, overly prescriptive class hierarchies. Instead of forcing every ecological model into a single universal mold, it identifies the structural commonalities shared across diverse model families:
+
+- **Tight coupling between algorithms and data:** A model consists of both functional equations and the data structures they operate on.
+- **Distinct categories of model data:**
+  - `parms`: Model parameters (constants).
+  - `init`: Initial values of state variables.
+  - `inputs`: External forcing data or time-dependent input variables.
+  - `times`: Simulation time steps (`from`, `to`, `by`).
+- **Structured functional components:**
+  - `main`: The core model function (e.g., derivatives for ODEs or state transition rules for discrete-time models).
+  - `equations`: An optional list of nested sub-models or helper functions.
+  - `solver`: The numerical integration or iteration algorithm, alongside standardized methods for data management and visualization.
+
+### The `simObj` Architecture
+
+In `simecol`, models are encapsulated as S4 objects inheriting from the base class `simObj`. This class bundles all data slots and functional slots into a single self-contained object:
+
+| Slot | Type | Description |
+|:-----------------------|:-----------------------|:-----------------------|
+| `main` | `function` | Core model equations or transition rules |
+| `equations` | `list` | Optional list of sub-models or helper functions |
+| `times` | `numeric` | Vector of simulation time steps |
+| `init` | `ANY` | Initial state values (e.g., numeric vector, matrix, or data frame) |
+| `parms` | `ANY` | Model parameters (e.g., numeric vector or list) |
+| `inputs` | `ANY` | External time-series inputs or forcing functions |
+| `solver` | `character` | Name of the solver function (e.g., `"lsoda"`, `"rk4"`, `"euler"`, `"iteration"`) |
+| `out` | `ANY` | Simulation output stored after running `sim()` |
+| `initfunc` | `function` | Optional initialization function executed when the object is created or modified |
+
+To accommodate different mathematical formulations, `simecol` provides specialized subclasses of `simObj`:
+
+- **`odeModel`**: Ordinary differential equation models (solved via wrappers to `deSolve` integrators such as `lsoda`, `rk4`, or `euler`).
+- **`gridModel`**: Spatially explicit, grid-based cellular automata (typically solved via discrete `"iteration"`).
+- **`rwalkModel`**: Individual-based or random-walk models.
+- **User-defined subclasses**: Custom model families extending `simObj`.
+
+Generic functions such as `sim()`, `plot()`, and `print()`, together with accessor functions (`parms()`, `init()`, `times()`, `inputs()`, `equations()`, `solver()`, and `out()`), provide a uniform user interface across all model types.
+
+------------------------------------------------------------------------
+
+## Core Examples
+
+### Example 1: Lotka-Volterra Predator-Prey Model (`odeModel`)
+
+The classical Lotka-Volterra model describes the continuous-time dynamics of a prey population ($X_1$) and a predator population ($X_2$):
+
+$$\begin{aligned} \frac{dX_1}{dt} &= b \cdot X_1 - e \cdot X_1 \cdot X_2 \\ \frac{dX_2}{dt} &= -d \cdot X_2 + e \cdot X_1 \cdot X_2 \end{aligned}$$
+
+In `simecol`, this system is defined as an `odeModel` object:
+
+```{r lotka-volterra}
+library("simecol")
+lv <- new("odeModel",
+  main = function(time, init, parms) {
+    x <- init
+    with(as.list(parms), {
+      dx1 <-  b * x[1] - e * x[1] * x[2]
+      dx2 <- -d * x[2] + e * x[1] * x[2]
+      list(c(dx1, dx2))
+    })
+  },
+  ##       birth,  encounter,  death
+  parms  = c(b = 0.2, e = 0.2, d = 0.2),
+  times  = seq(0, 100, 1),
+  init   = c(prey = 0.5, predator = 1),
+  solver = "lsoda" # solver function from the deSolve package
+)
+
+lv <- sim(lv)
+plot(lv)
+```
+
+### Example 2: Conway's Game of Life (`gridModel`)
+
+Cellular automata operate on discrete spatial grids updated over discrete time steps. In Conway's Game of Life, each cell's state $X \in \{0, 1\}$ depends on the number of active neighbors $N$ in its 8-cell Moore neighborhood:
+
+- If $X = 1$ and $N \in \{2, 3\}$, the cell survives ($X := 1$).
+- If $X = 0$ and $N = 3$, a new cell is born ($X := 1$).
+- Otherwise, the cell dies or remains empty ($X := 0$).
+
+Using `gridModel` and the built-in `eightneighbours()` utility function, the model is written concisely in matrix form:
+
+```{r conway-setup}
+set.seed(123)
+conway <- new("gridModel",
+  main = function(time, init, parms) {
+    x      <- init
+    nb     <- eightneighbours(x)
+    surviv <- (x >  0 & (nb %in% parms$srv))
+    gener  <- (x == 0 & (nb %in% parms$gen))
+    x      <- as.numeric((surviv + gener) > 0)
+    dim(x) <- dim(init)
+    return(x)
+  },
+  parms  = list(srv = c(2, 3), gen = 3),
+  times  = 1:20,
+  init   = matrix(round(runif(1000)), ncol = 40),
+  solver = "iteration"
+)
+```
+
+To run an animated simulation in an interactive R session, use `animate = TRUE`:
+
+```{r conway-animate, eval=FALSE}
+sim(conway, animate = TRUE, axes = FALSE)
+```
+
+------------------------------------------------------------------------
+
+## Cloning and Modifying Models
+
+A central workflow in `simecol` is **cloning and modification**—a hallmark of prototype-based object-oriented programming. Rather than copying and editing source files to test alternative hypotheses or parameter sets, users copy an existing `simObj` in memory and modify specific slots via accessor functions (`init<-`, `parms<-`, `times<-`, `equations<-`).
+
+The following example clones the `conway` prototype, initializes a glider-like pattern on a $20 \times 20$ grid (`life1`), and then creates a second clone (`life2`) with modified survival and birth rules:
+
+```{r cloning-conway}
+# Clone the prototype and set a custom initial grid
+life1 <- conway
+z <- matrix(0, 20, 20)
+z[14, 10:12] <- z[13, 11] <- z[15, 12] <- 1
+init(life1) <- z
+
+# Clone life1 to create a second scenario with modified rules
+life2 <- life1
+parms(life2) <- list(srv = c(3, 4), gen = c(3, 4))
+
+# Simulate both instances independently in memory
+life1 <- sim(life1)
+life2 <- sim(life2)
+```
+
+```{r cloning-conway2}
+#| eval: FALSE
+# Compare results
+par(mfrow = c(1, 2))
+plot(life1, index=20, main = "1) Standard Rules")
+plot(life2, index=20, main = "2) Modified Rules")
+```
+
+```{r cloning-conway3}
+#| echo: FALSE
+# Compare results
+par(mfrow = c(1, 2))
+plot(life1, index=20, main = "1) Standard Rules")
+plot(life2, index=20, main = "2) Modified Rules")
+```
+
+Because `life1` and `life2` are independent S4 objects in memory, scenario comparisons remain clean, reproducible, and free of file duplication.
+
+------------------------------------------------------------------------
+
+## Individual-Based Models (IBMs) in R
+
+A frequent question in ecological modeling is whether R's high-level data structures can efficiently support individual-based models (IBMs).
+
+### Vectorized, Table-Oriented Design
+
+While nested loops over thousands of individual objects can be slow in interpreted languages, R achieves strong performance when individuals are represented in **tabular structures** (`data.frame` or `matrix`) and updated in bulk using vectorized operations ("quasi-parallel" processing):
+
+- **State updates (growth/aging):** Vectorized column arithmetic updates all individuals simultaneously:
+
+  ``` r
+  inds$age    <- inds$age + delta_t
+  inds$weight <- inds$weight + assi(food, inds$weight, temp) * delta_t
+  ```
+
+- **Reproduction:** Newly generated offspring are stored in a `newinds` table and appended via `rbind(inds, newinds)`.
+
+- **Mortality:** Stochastic survival is evaluated across all rows at once using `runif()` and `subset()`:
+
+  ``` r
+  survive <- function(inds, pmort = 0.01) {
+    p <- runif(nrow(inds))
+    subset(inds, p < pmort)
+  }
+  ```
+
+When performance bottlenecks still arise in complex spatial interactions, critical inner loops can be compiled in C or C++ and called directly from R.
+
+### Built-in IBM and Chaotic System Examples
+
+The `simecol` package ships with ready-to-run example models illustrating both individual-based and multi-species chaotic dynamics, such as the chaotic Lotka-Volterra (**UPCA**) model:
+
+```{r upca-example}
+data(upca)
+out_upca <- out(sim(upca))
+plot(out_upca, col = "navy")
+```
+
+------------------------------------------------------------------------
+
+## Modular Sub-Equations
+
+For larger ecological models, equations can be decomposed into modular, nested helper functions inside the `equations` slot. Functions listed in `equations` are automatically visible inside `main`, allowing users to inspect or replace individual sub-processes without rewriting the entire model:
+
+```{r sub-equations}
+logistic_model <- new("odeModel",
+  main = function(time, init, parms) {
+    x <- init
+    dx1 <- f2(x[1], r = 0.1, K = 10)
+    list(c(dx1))
+  },
+  equations = list(
+    f1 = function(x, K)    K - x,
+    f2 = function(x, r, K) r * x * f1(x, K)
+  ),
+  times = seq(0, 10, 0.1),
+  init  = c(x = 0.5),
+  solver = "lsoda"
+)
+
+plot(sim(logistic_model))
+```
+
+------------------------------------------------------------------------
+
+## Summary
+
+Combining prototype-inspired object orientation with R's vectorized data structures makes ecological modeling both expressive and maintainable:
+
+- **Clarity and reusability:** Models are self-contained `simObj` instances that can be cloned, modified, and shared without copy-and-paste file proliferation.
+- **Compact, vectorized code:** Matrix and table-based representations allow cellular automata and individual-based models to be expressed concisely.
+- **From users to developers:** Because `simecol` models expose a consistent interface (`sim()`, `plot()`, `parms()`, `init()`), domain scientists can start by running existing models and gradually transition into modifying equations and developing their own model families.
