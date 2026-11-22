@@ -41,6 +41,8 @@ jobs:
           use-public-rspm: true
       - name: Set up LaTeX
         uses: r-lib/actions/setup-tinytex@v2
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
       - name: Install system dependencies (gs, qpdf) on Ubuntu
         if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |

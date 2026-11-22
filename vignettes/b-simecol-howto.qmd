@@ -471,7 +471,7 @@ ysim <- out(sim(cs2))
 
 Note that time steps in data and model must be the same. However, for producing a smooth figure it is recommended to use a smaller time step. We will need this figure also for further examples, so it makes sense to define a function:
 
-```{r fit1}
+```{r}
 #| label: fig-fit1
 #| fig-cap: "Observed data and fitted model."
 #| fig-width: 10
@@ -524,7 +524,7 @@ res <- fitOdeModel(cs1, whichpar = whichpar,
 
 Assigning fitted parameters and a new simulation now results in (@fig-fit2):
 
-```{r fit2}
+```{r}
 #| label: fig-fit2
 #| fig-cap: "Observed data and fitted model ($k_m$, $v_m$ and initial values were estimated)."
 #| fig-width: 10
@@ -670,7 +670,7 @@ plot(Fit)
 
 ## Implementing Models in Compiled Languages
 
-Compilation of model code can speed up simulations considerably and there are several ways to call compiled code from R; so it is possible to use functions written in C/C++ or Fortran in the ordinary way described in the "Writing R Extensions" manual [@Rexts2006]. This can speed up computations, but still a certain amount of communication overhead is needed because control is given back to R in every simulation step.
+Compilation of model code can speed up simulations considerably and there are several ways to call compiled code from R; so it is possible to use functions written in C/C++ or Fortran in the ordinary way described in the "Writing R Extensions" manual [@Rexts2026]. This can speed up computations, but still a certain amount of communication overhead is needed because control is given back to R in every simulation step.
 
 In addition to this basic method, it is also possible to enable direct communication between integration routines and the model code if both are available in compiled languages and if the direct call of a compiled model is supported by the integrator. All integrators of package **deSolve** support this; see the **deSolve** documentation for details.
 
@@ -728,7 +728,7 @@ If the tools are installed, compilation can be done directly from R with:
 system("R CMD SHLIB clotka.c")
 ```
 
-The result, a shared library or DLL, can now be linked to the current R session with `dyn.load`, which we show here for Windows, and which is quite similar for Linux [see @Rexts2006, Writing R Extensions for details]. Note that you must set the working directory of R to the path where the DLL resides or use the full path in the call to `dyn.load`:
+The result, a shared library or DLL, can now be linked to the current R session with `dyn.load`, which we show here for Windows, and which is quite similar for Linux [see @Rexts2026, Writing R Extensions for details]. Note that you must set the working directory of R to the path where the DLL resides or use the full path in the call to `dyn.load`:
 
 ```{r clotka-R}
 #| eval: false

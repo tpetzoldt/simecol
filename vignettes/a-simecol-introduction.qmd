@@ -233,8 +233,7 @@ plot(CA)
 
 A second built-in demonstration example of **simecol** is the elementary Lotka-Volterra predator-prey model, which can be given by two ordinary differential equations:
 
-$$\begin{aligned} \frac{dX_1}{dt} &= k_1 X_1 - k_2 X_1 X_2   \\ \frac{dX_2}{dt} &= - k_3 X_2 + k_2 X_1 X_2 \end{aligned}$$
-{#eq-lv}
+$$\begin{aligned} \frac{dX_1}{dt} &= k_1 X_1 - k_2 X_1 X_2   \\ \frac{dX_2}{dt} &= - k_3 X_2 + k_2 X_1 X_2 \end{aligned}$${#eq-lv}
 
 In order to reproduce a schoolbook example, two scenarios may be created by modifying two copies (clones) of `lv`:
 

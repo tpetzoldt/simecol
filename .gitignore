@@ -8,3 +8,6 @@ src/*.dll
 /_local
 /work
 docs
+
+/.quarto/
+**/*.quarto_ipynb
