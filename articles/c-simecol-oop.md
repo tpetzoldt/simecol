@@ -1,4 +1,4 @@
-# Ecological Modeling with R: The simecol Package
+# 3. Motivation of the simecol Package
 
 ## 1 Introduction: R as a Modeling Tool
 

@@ -4,14 +4,19 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>simecol: An Object-Oriented Framework for Ecological Modeling in R • simecol</title>
+<title>simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper) • simecol</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="a-simecol-introduction_files/libs/quarto-html/popper.min.js"></script><script src="a-simecol-introduction_files/libs/quarto-html/tippy.umd.min.js"></script><link href="a-simecol-introduction_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="a-simecol-introduction_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="simecol: An Object-Oriented Framework for Ecological Modeling in R">
+<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)">
 <meta property="og:image" content="https://tpetzoldt.github.io/simecol/logo.svg">
 </head>
 <body>
@@ -35,10 +40,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/a-simecol-introduction.html">simecol: An Object-Oriented Framework for Ecological Modeling in R</a></li>
-    <li><a class="dropdown-item" href="../articles/b-simecol-howto.html">simecol-Howto: Tips, Tricks and Building Blocks</a></li>
-    <li><a class="dropdown-item" href="../articles/c-simecol-oop.html">Ecological Modeling with R: The simecol Package</a></li>
-    <li><a class="dropdown-item" href="../articles/index.html">R package simecol</a></li>
+<li><a class="dropdown-item" href="../articles/a-simecol-introduction.html">simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)</a></li>
+    <li><a class="dropdown-item" href="../articles/b-simecol-howto.html">2. simecol-Howto: Tips, Tricks and Building Blocks</a></li>
+    <li><a class="dropdown-item" href="../articles/c-simecol-oop.html">3. Motivation of the simecol Package</a></li>
   </ul>
 </li>
       </ul>
@@ -55,7 +59,7 @@
 </nav><div class="container template-quarto">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.svg" class="logo" alt=""><h1>simecol: An Object-Oriented Framework for Ecological Modeling in R</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)</h1>
 
       <p class="author">Thomas PetzoldtKarsten Rinke</p>
 
@@ -69,7 +73,15 @@
 
 
 
-    <section class="level2" data-number="1"><h2 data-number="1" id="introduction">
+    <p><strong>Abstract</strong></p>
+<p>The <strong>simecol</strong> package provides an open structure to implement, simulate and share ecological models. A generalized object-oriented architecture improves readability and potential code re-use of models and makes <strong>simecol</strong>-models freely extendable and simple to use. The <strong>simecol</strong> package was implemented in the S4 class system of the programming language R. Reference applications, e.g., predator-prey models or grid models are provided which can be used as a starting point for own developments. Compact example applications and the complete code of an individual-based model of the water flea <em>Daphnia</em> document the efficient usage of <strong>simecol</strong> for various purposes in ecological modeling, e.g., scenario analysis, stochastic simulations and individual-based population dynamics. Ecologists are encouraged to exploit the abilities of <strong>simecol</strong> to structure their work and to use R and object-oriented programming as a suitable medium for the distribution and sharing of ecological modeling code.</p>
+<div>
+<blockquote>
+<p><strong>Citation</strong></p>
+<p>A previous version of this document has been published as <span class="citation" data-cites="Petzoldt2007">Petzoldt and Rinke (<a href="#ref-Petzoldt2007" role="doc-biblioref">2007</a>)</span> in the <em>Journal of Statistical Software</em>, <a href="https://www.jstatsoft.org/v22/i09" class="external-link uri">https://www.jstatsoft.org/v22/i09</a>. Please refer to the original publication when citing this work.</p>
+</blockquote>
+</div>
+<section class="level2" data-number="1"><h2 data-number="1" id="introduction">
 <span class="header-section-number">1</span> Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>The R system with the underlying S programming language is well suited for the development, implementation and analysis of dynamic models. It is, in addition to data analysis, increasingly used for model simulations in many disciplines like pharmacology <span class="citation" data-cites="Torno2004a">(<a href="#ref-Torno2004a" role="doc-biblioref">Tornø et al. 2004</a>)</span>, psychology <span class="citation" data-cites="Maas2006">(<a href="#ref-Maas2006" role="doc-biblioref">Maas et al. 2006</a>)</span>, microbiology <span class="citation" data-cites="Jensen2006">(<a href="#ref-Jensen2006" role="doc-biblioref">Jensen et al. 2006</a>)</span>, epidemiology <span class="citation" data-cites="Hartley2006">(<a href="#ref-Hartley2006" role="doc-biblioref">Hartley et al. 2006</a>)</span>, ecology <span class="citation" data-cites="Fussmann2003 Rinke2005 Levey2005">(<a href="#ref-Fussmann2003" role="doc-biblioref">Fussmann et al. 2003</a>; <a href="#ref-Rinke2005" role="doc-biblioref">Rinke and Vijverberg 2005</a>; <a href="#ref-Levey2005" role="doc-biblioref">Levey et al. 2005</a>)</span> or econometrics <span class="citation" data-cites="Cribari-Neto1999 Zeileis2005">(<a href="#ref-Cribari-Neto1999" role="doc-biblioref">Cribari-Neto and Zarkos 1999</a>; <a href="#ref-Zeileis2005" role="doc-biblioref">Zeileis et al. 2005</a>)</span>. Existing applications already cover a range from small conceptual process and teaching models up to coupled hydrodynamic-ecological models <span class="citation" data-cites="Rolinski2005">(<a href="#ref-Rolinski2005" role="doc-biblioref">Rolinski et al. 2005</a>)</span>. Small models can be implemented easily in pure R <span class="citation" data-cites="Petzoldt2003a">(<a href="#ref-Petzoldt2003a" role="doc-biblioref">Petzoldt 2003</a>)</span> or by means of the XML-based Systems Biology Markup Language SBML and the corresponding Bioconductor package <span class="citation" data-cites="Radivoyevitch2004">(<a href="#ref-Radivoyevitch2004" role="doc-biblioref">Radivoyevitch 2004</a>)</span>. For more complex or computation-intensive simulations, R is primarily used as an environment for data management, simulation control and data analysis, while the model core may be implemented in other languages like C/C++, FORTRAN or Java.</p>

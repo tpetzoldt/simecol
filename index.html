@@ -5,6 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Simulation of Ecological (and Other) Dynamic Systems • simecol</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -35,10 +40,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/a-simecol-introduction.html">simecol: An Object-Oriented Framework for Ecological Modeling in R</a></li>
-    <li><a class="dropdown-item" href="articles/b-simecol-howto.html">simecol-Howto: Tips, Tricks and Building Blocks</a></li>
-    <li><a class="dropdown-item" href="articles/c-simecol-oop.html">Ecological Modeling with R: The simecol Package</a></li>
-    <li><a class="dropdown-item" href="articles/index.html">R package simecol</a></li>
+<li><a class="dropdown-item" href="articles/a-simecol-introduction.html">simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)</a></li>
+    <li><a class="dropdown-item" href="articles/b-simecol-howto.html">2. simecol-Howto: Tips, Tricks and Building Blocks</a></li>
+    <li><a class="dropdown-item" href="articles/c-simecol-oop.html">3. Motivation of the simecol Package</a></li>
   </ul>
 </li>
       </ul>
@@ -62,17 +66,32 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p><strong>simecol</strong> (simulation of ecological systems) is a lightweight <a href="https://www.r-project.org" class="external-link">R</a> package that employs an object oriented paradigm for the implementation of dynamic simulation models.</p>
-<p>The package is intended to give users (students and scientists) an interactive environment to implement, distribute, simulate and document basic and advanced ecological models without the need to write long simulation programs. An object oriented approach is used to provide a consistent but still flexible and extensible way to implement simulation models of different types:</p>
+<p><strong>simecol</strong> is a lightweight <a href="https://www.r-project.org" class="external-link">R</a> package that uses an object-oriented paradigm to implement dynamic simulation models. It provides students and researchers with an interactive environment to build, distribute, simulate, and document both basic and advanced ecological models—without having to write long simulation programs from scratch.</p>
+<p>A prototype-based object-oriented approach offers a consistent yet flexible and extensible framework across diverse model types, including:</p>
 <ul>
 <li>ordinary differential equation (ODE) models,</li>
 <li>non-spatial individual-based models,</li>
 <li>grid-oriented individual-based models,</li>
-<li>particle diffusion-type / random walk models</li>
-<li>and more.</li>
+<li>particle diffusion and random-walk models, and more.</li>
 </ul>
-<p>A simulation model is implemented as <strong>simecol</strong> object (<strong>simObj</strong>) with components <strong>main</strong>, holding the main model equations, rules or arbitrary program code, <strong>equations</strong> (optional, a list of possibly nested sub-models or sub-equations ), <strong>parms</strong> with model parameters, <strong>init</strong> with the initial state, <strong>inputs</strong> (optional) for external input data and <strong>times</strong> to define the simulation time and the time steps used.</p>
-<p><strong>simecolModels</strong> is a simulation model collection, together with additional classes, demos and experimental code.</p>
+<p>A simulation model is represented as a <strong>simecol</strong> object (<strong>simObj</strong>) containing the following core slots:</p>
+<ul>
+<li>
+<strong>main</strong>: the primary model equations, rules, or arbitrary program code,</li>
+<li>
+<strong>init</strong>: initial state variables,</li>
+<li>
+<strong>parms</strong>: model parameters,</li>
+<li>
+<strong>times</strong>: the simulation time span and time steps,</li>
+<li>
+<strong>equations</strong> <em>(optional)</em>: a list of sub-models or nested sub-equations,</li>
+<li>
+<strong>inputs</strong> <em>(optional)</em>: external forcing or input data, and</li>
+<li>
+<strong>observer</strong> <em>(optional)</em>: a user-defined function for monitoring, logging, or visualizing states during simulation.</li>
+</ul>
+<p>Another key design principle from the prototype paradigm is <strong>cloning</strong>, which makes it straightforward to create and organize multiple simulation scenarios consistently.</p>
 </div>
 <div class="section level2">
 <h2 id="download">Download<a class="anchor" aria-label="anchor" href="#download"></a>
@@ -125,7 +144,7 @@
 <div class="section level3">
 <h3 id="template">Template<a class="anchor" aria-label="anchor" href="#template"></a>
 </h3>
-<p>The following example shows that the structure of a model object is just a template.</p>
+<p>The following example shows a template of the model structure:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/tpetzoldt/simecol/" class="external-link">"simecol"</a></span><span class="op">)</span></span>
 <span><span class="va">conway</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/methods/new.html" class="external-link">new</a></span><span class="op">(</span><span class="st">"gridModel"</span>,</span>
@@ -172,15 +191,10 @@
 <p><strong>simecol</strong>, like R, is free open source software licensed under the <a href="https://www.gnu.org/licenses/#GPL" class="external-link">GNU Public License</a> (GPL 2.0 or above). The software is provided as is and comes WITHOUT WARRANTY.</p>
 </div>
 <div class="section level3">
-<h3 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a>
-</h3>
-<p><a href="https://www.tu-dresden.de/Members/thomas.petzoldt" class="external-link">Thomas Petzoldt</a>, Technische Universit?t Dresden, Institute of Hydrobiology</p>
-</div>
-<div class="section level3">
 <h3 id="support">Support<a class="anchor" aria-label="anchor" href="#support"></a>
 </h3>
 <p>Please send your questions to the <a href="https://stat.ethz.ch/mailman/listinfo/r-sig-dynamic-models" class="external-link">R-SiG-Dynamic-Models</a> mailing list.</p>
-<p>2026-11-21</p>
+<p>2026-11-22</p>
 </div>
 </div>
 </div>

@@ -1,4 +1,4 @@
-# simecol-Howto: Tips, Tricks and Building Blocks
+# 2. simecol-Howto: Tips, Tricks and Building Blocks
 
 ## 1 The Basics
 
@@ -505,7 +505,7 @@ getMethod("sim", "odeModel")
         obj@out <- out
         invisible(obj)
     }
-    <bytecode: 0x5bba2156fbd8>
+    <bytecode: 0x5ddb9fbb5bd8>
     <environment: namespace:simecol>
 
     Signatures:

@@ -1,4 +1,29 @@
-# simecol: An Object-Oriented Framework for Ecological Modeling in R
+# simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)
+
+**Abstract**
+
+The **simecol** package provides an open structure to implement,
+simulate and share ecological models. A generalized object-oriented
+architecture improves readability and potential code re-use of models
+and makes **simecol**-models freely extendable and simple to use. The
+**simecol** package was implemented in the S4 class system of the
+programming language R. Reference applications, e.g., predator-prey
+models or grid models are provided which can be used as a starting point
+for own developments. Compact example applications and the complete code
+of an individual-based model of the water flea *Daphnia* document the
+efficient usage of **simecol** for various purposes in ecological
+modeling, e.g., scenario analysis, stochastic simulations and
+individual-based population dynamics. Ecologists are encouraged to
+exploit the abilities of **simecol** to structure their work and to use
+R and object-oriented programming as a suitable medium for the
+distribution and sharing of ecological modeling code.
+
+> **Citation**
+>
+> A previous version of this document has been published as Petzoldt and
+> Rinke ([2007](#ref-Petzoldt2007)) in the *Journal of Statistical
+> Software*, <https://www.jstatsoft.org/v22/i09>. Please refer to the
+> original publication when citing this work.
 
 ## 1 Introduction
 
