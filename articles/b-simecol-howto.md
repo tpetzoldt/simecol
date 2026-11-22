@@ -505,7 +505,7 @@ getMethod("sim", "odeModel")
         obj@out <- out
         invisible(obj)
     }
-    <bytecode: 0x58852f6ec790>
+    <bytecode: 0x60d3e6bc20d0>
     <environment: namespace:simecol>
 
     Signatures:
