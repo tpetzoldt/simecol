@@ -1,3 +1,9 @@
+0.9-7
+o add sheep logo
+o convert vignettes to quarto / html
+o new 3rd vignette 
+o fix issues in plot functions
+
 0.9-5
 o complete rewrite of the C functions.
   Increased stability and performance.
