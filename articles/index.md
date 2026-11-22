@@ -2,7 +2,7 @@
 
 ### All vignettes
 
-- [simecol: An Object-Oriented Framework for Ecological Modeling in R
+- [1. simecol: An Object-Oriented Framework for Ecological Modeling in R
   (JSS
   Paper)](https://tpetzoldt.github.io/simecol/articles/a-simecol-introduction.md):
 - [2. simecol-Howto: Tips, Tricks and Building

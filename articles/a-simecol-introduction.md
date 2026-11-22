@@ -1,4 +1,4 @@
-# simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)
+# 1. simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)
 
 **Abstract**
 

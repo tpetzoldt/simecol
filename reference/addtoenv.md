@@ -56,9 +56,9 @@ fx <- function(eq) {
 
 fx(eq)
 #> [1] "eq" "f1" "f2"
-#> <environment: 0x5a08e490edd0>
+#> <environment: 0x55731433afc8>
 #> [1] 12
 ## eq$f2(2,3,4)       # should give an error outside fx
 environment(eq$f2)    # should return R_GlobalEnv again
-#> <environment: 0x5a08e490edd0>
+#> <environment: 0x55731433afc8>
 ```
