@@ -1,5 +1,5 @@
 ---
-title: "simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)"
+title: "1. simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)"
 author:
   - name: Thomas Petzoldt
     affiliation: Technische Universität Dresden, Institut für Hydrobiologie, 01062 Dresden, Germany
@@ -22,7 +22,7 @@ format:
     code-fold: false
     embed-resources: true
 vignette: >
-  %\VignetteIndexEntry{simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)}
+  %\VignetteIndexEntry{1. simecol: An Object-Oriented Framework for Ecological Modeling in R (JSS Paper)}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
