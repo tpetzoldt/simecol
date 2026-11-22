@@ -3,20 +3,27 @@
 
 ## Overview
 
-**simecol** (simulation of ecological systems) is a lightweight [R](https://www.r-project.org) package that employs an object oriented paradigm for the implementation of dynamic simulation models.
+**simecol** is a lightweight [R](https://www.r-project.org) package that uses an object-oriented paradigm to implement dynamic simulation models.
+It provides students and researchers with an interactive environment to build, distribute, simulate, and document both basic and advanced ecological models—without having to write long simulation programs from scratch.
 
-The  package is intended to give users (students and scientists) an interactive environment to implement, distribute, simulate and document basic and advanced ecological models without the need to write long simulation programs. An object oriented approach is used to provide a consistent but still flexible and extensible way to implement simulation models of different types:
+A prototype-based object-oriented approach offers a consistent yet flexible and extensible framework across diverse model types, including:
 
-* ordinary differential equation (ODE) models,
-* non-spatial individual-based models,
-* grid-oriented individual-based models,
-* particle diffusion-type / random walk models
-* and more.
+- ordinary differential equation (ODE) models,
+- non-spatial individual-based models,
+- grid-oriented individual-based models,
+- particle diffusion and random-walk models, and more.
 
-A simulation model is implemented as **simecol** object (**simObj**) with components **main**, holding the main model equations, rules or arbitrary program code, **equations** (optional, a list of possibly nested sub-models or sub-equations ), **parms** with model parameters, **init** with the initial state, **inputs** (optional) for external input data and **times** to define the simulation time and the time steps used.
+A simulation model is represented as a **simecol** object (**simObj**) containing the following core slots:
 
-**simecolModels** is a simulation model collection, together with additional classes, demos and experimental code.
-  
+- **main**: the primary model equations, rules, or arbitrary program code,
+- **init**: initial state variables,
+- **parms**: model parameters,
+- **times**: the simulation time span and time steps,
+- **equations** *(optional)*: a list of sub-models or nested sub-equations,
+- **inputs** *(optional)*: external forcing or input data, and
+- **observer** *(optional)*: a user-defined function for monitoring, logging, or visualizing states during simulation.
+
+Another key design principle from the prototype paradigm is **cloning**, which makes it straightforward to create and organize multiple simulation scenarios consistently.
 
 ## Download
 
@@ -72,7 +79,7 @@ sim(conway, animate=TRUE, delay=100, col=c("white", "green"), axes=FALSE)
 
 ### Template
 
-The following example shows that the structure of a model object is just a template.
+The following example shows a template of the model structure:
 
 
 ``` r
@@ -114,17 +121,11 @@ plot(sim(conway))
 
 **simecol**, like R, is free open source software licensed under the [GNU Public License](https://www.gnu.org/licenses/#GPL) (GPL 2.0 or above). The software is provided as is and comes WITHOUT WARRANTY.
 
-### Author
-
-[Thomas Petzoldt](https://www.tu-dresden.de/Members/thomas.petzoldt), Technische Universit?t Dresden, Institute of Hydrobiology
-
 ### Support
 
 Please send your questions to the [R-SiG-Dynamic-Models](https://stat.ethz.ch/mailman/listinfo/r-sig-dynamic-models) mailing list.
 
 
 
-
-
-2026-11-21
+2026-11-22
 

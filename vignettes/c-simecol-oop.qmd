@@ -1,5 +1,5 @@
 ---
-title: "Ecological Modeling with R: The simecol Package"
+title: "3. Motivation of the simecol Package"
 author: "Thomas Petzoldt"
 format:
   html:
@@ -8,7 +8,7 @@ format:
     number-sections: true
     code-fold: false
 vignette: >
-  %\VignetteIndexEntry{Ecological Modeling with R: The simecol Package}
+  %\VignetteIndexEntry{3. Motivation of the simecol Package}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---

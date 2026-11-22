@@ -1,5 +1,5 @@
 ---
-title: "simecol-Howto: Tips, Tricks and Building Blocks"
+title: "2. simecol-Howto: Tips, Tricks and Building Blocks"
 author:
   - name: Thomas Petzoldt
     affiliation: Technische Universität Dresden, Institut für Hydrobiologie, 01062 Dresden, Germany
@@ -23,7 +23,7 @@ format:
     code-fold: false
     embed-resources: true
 vignette: >
-  %\VignetteIndexEntry{Simecol-Howto: Tips, Tricks and Building Blocks}
+  %\VignetteIndexEntry{2. simecol-Howto: Tips, Tricks and Building Blocks}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
