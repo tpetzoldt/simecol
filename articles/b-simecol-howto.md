@@ -505,7 +505,7 @@ getMethod("sim", "odeModel")
         obj@out <- out
         invisible(obj)
     }
-    <bytecode: 0x61bf12c31528>
+    <bytecode: 0x58852f6ec790>
     <environment: namespace:simecol>
 
     Signatures:
@@ -610,7 +610,7 @@ existing optimization functions of R, currently `nlminb` with the
 `"PORT"` algorithm, `newuoa` and `bobyqa` from package **minqa**
 ([Powell 2009](#ref-Powell2009); [Bates et al. 2024](#ref-minqa)) and
 `optim` with `"Nelder-Mead"`, `"BFGS"`, `"CG"`, `"L-BFGS-B"` and
-`"SANN"` (cf. [**Rcore2015?**](#ref-Rcore2015); [Nash
+`"SANN"` (cf. [R Core Team 2015](#ref-Rcore2015); [Nash
 1990](#ref-Nash1990), and others). Among these, only `"PORT"`,
 `"bobyqa"` and `"L-BFGS-B"` support constrained optimization natively,
 whereas for the others `fitOdeModel` tries to emulate box constraints
@@ -1118,10 +1118,10 @@ plot(Fit)
 Compilation of model code can speed up simulations considerably and
 there are several ways to call compiled code from R; so it is possible
 to use functions written in C/C++ or Fortran in the ordinary way
-described in the “Writing R Extensions” manual
-([**Rexts2006?**](#ref-Rexts2006)). This can speed up computations, but
-still a certain amount of communication overhead is needed because
-control is given back to R in every simulation step.
+described in the “Writing R Extensions” manual ([R Core Team
+2026](#ref-Rexts2026)). This can speed up computations, but still a
+certain amount of communication overhead is needed because control is
+given back to R in every simulation step.
 
 In addition to this basic method, it is also possible to enable direct
 communication between integration routines and the model code if both
@@ -1194,10 +1194,10 @@ system("R CMD SHLIB clotka.c")
 
 The result, a shared library or DLL, can now be linked to the current R
 session with `dyn.load`, which we show here for Windows, and which is
-quite similar for Linux (see [**Rexts2006?**](#ref-Rexts2006), Writing R
-Extensions for details). Note that you must set the working directory of
-R to the path where the DLL resides or use the full path in the call to
-`dyn.load`:
+quite similar for Linux (see [R Core Team 2026](#ref-Rexts2026), Writing
+R Extensions for details). Note that you must set the working directory
+of R to the path where the DLL resides or use the full path in the call
+to `dyn.load`:
 
 ``` r
 
@@ -1390,6 +1390,13 @@ Powell, M. J. D. 2009. *The BOBYQA Algorithm for Bound Constrained
 Optimization Without Derivatives (Technical Report No. DAMTP
 2009/NA06)*. Cambridge: University of Cambridge, Department of Applied
 Mathematics and Theoretical Physics, Centre for Mathematical Sciences.
+
+R Core Team. 2015. *R: A Language and Environment for Statistical
+Computing*. R Foundation for Statistical Computing.
+<https://www.R-project.org/>.
+
+R Core Team. 2026. *Writing Extensions*. R Foundation for Statistical
+Computing. <https://doi.org/10.32614/R.manuals>.
 
 Soetaert, Karline, and Thomas Petzoldt. 2010. “Inverse Modelling,
 Sensitivity and Monte Carlo Analysis in Using Package .” *Journal of

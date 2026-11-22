@@ -493,9 +493,8 @@ Lotka-Volterra predator-prey model, which can be given by two ordinary
 differential equations:
 
 ``` math
-\begin{aligned} \frac{dX_1}{dt} &= k_1 X_1 - k_2 X_1 X_2   \\ \frac{dX_2}{dt} &= - k_3 X_2 + k_2 X_1 X_2 \end{aligned}
+\begin{aligned} \frac{dX_1}{dt} &= k_1 X_1 - k_2 X_1 X_2   \\ \frac{dX_2}{dt} &= - k_3 X_2 + k_2 X_1 X_2 \end{aligned} \qquad(1)
 ```
-{#eq-lv}
 
 In order to reproduce a schoolbook example, two scenarios may be created
 by modifying two copies (clones) of `lv`:
@@ -643,12 +642,12 @@ Listing 2: Uniform Period Chaotic Amplitude Model after Blasius et al.
 
 The implementation of the Lotka-Volterra equations is straightforward
 and results in a compact S4 object ([Listing 1](#lst-lvmodel)). The two
-equations (**?@eq-lv**) can easily be put into the `main` function and
-there is no need for sub-equations. The code can be made even simpler
-without the two assignments at the beginning of `main`, but with respect
-to more structured models we found it generally advantageous to keep the
-default values of the names in the parameter line and on the other hand
-to use common symbols in the equations.
+equations ([Equation 1](#eq-lv)) can easily be put into the `main`
+function and there is no need for sub-equations. The code can be made
+even simpler without the two assignments at the beginning of `main`, but
+with respect to more structured models we found it generally
+advantageous to keep the default values of the names in the parameter
+line and on the other hand to use common symbols in the equations.
 
 ### 5.2 Models with nested subequations
 

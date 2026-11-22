@@ -5,6 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>2. simecol-Howto: Tips, Tricks and Building Blocks • simecol</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -439,7 +444,7 @@ function (obj, initialize = TRUE, ...)
     obj@out &lt;- out
     invisible(obj)
 }
-&lt;bytecode: 0x61bf12c31528&gt;
+&lt;bytecode: 0x58852f6ec790&gt;
 &lt;environment: namespace:simecol&gt;
 
 Signatures:
@@ -513,7 +518,7 @@ defined "odeModel"</code></pre>
 <span class="header-section-number">2.3</span> Parameter estimation in <code>simecol</code>
 <a class="anchor" aria-label="anchor" href="#parameter-estimation-in-simecol"></a>
 </h3>
-<p>Package <strong>simecol</strong> has a basic function for fitting parameters of ODE models (<code>fitOdeModel</code>) built in. This function is a wrapper that uses existing optimization functions of R, currently <code>nlminb</code> with the <code>"PORT"</code> algorithm, <code>newuoa</code> and <code>bobyqa</code> from package <strong>minqa</strong> <span class="citation" data-cites="Powell2009 minqa">(<a href="#ref-Powell2009" role="doc-biblioref">Powell 2009</a>; <a href="#ref-minqa" role="doc-biblioref">Bates et al. 2024</a>)</span> and <code>optim</code> with <code>"Nelder-Mead"</code>, <code>"BFGS"</code>, <code>"CG"</code>, <code>"L-BFGS-B"</code> and <code>"SANN"</code> <span class="citation" data-cites="Rcore2015 Nash1990">(cf. <a href="#ref-Rcore2015" role="doc-biblioref"><strong>Rcore2015?</strong></a>; <a href="#ref-Nash1990" role="doc-biblioref">Nash 1990</a>, and others)</span>. Among these, only <code>"PORT"</code>, <code>"bobyqa"</code> and <code>"L-BFGS-B"</code> support constrained optimization natively, whereas for the others <code>fitOdeModel</code> tries to emulate box constraints (more or less successfully) using an arctan transformation (see <code>p.constrain</code>).</p>
+<p>Package <strong>simecol</strong> has a basic function for fitting parameters of ODE models (<code>fitOdeModel</code>) built in. This function is a wrapper that uses existing optimization functions of R, currently <code>nlminb</code> with the <code>"PORT"</code> algorithm, <code>newuoa</code> and <code>bobyqa</code> from package <strong>minqa</strong> <span class="citation" data-cites="Powell2009 minqa">(<a href="#ref-Powell2009" role="doc-biblioref">Powell 2009</a>; <a href="#ref-minqa" role="doc-biblioref">Bates et al. 2024</a>)</span> and <code>optim</code> with <code>"Nelder-Mead"</code>, <code>"BFGS"</code>, <code>"CG"</code>, <code>"L-BFGS-B"</code> and <code>"SANN"</code> <span class="citation" data-cites="Rcore2015 Nash1990">(cf. <a href="#ref-Rcore2015" role="doc-biblioref">R Core Team 2015</a>; <a href="#ref-Nash1990" role="doc-biblioref">Nash 1990</a>, and others)</span>. Among these, only <code>"PORT"</code>, <code>"bobyqa"</code> and <code>"L-BFGS-B"</code> support constrained optimization natively, whereas for the others <code>fitOdeModel</code> tries to emulate box constraints (more or less successfully) using an arctan transformation (see <code>p.constrain</code>).</p>
 <p>In order to save computation time it is suggested to use an efficient variable time step algorithm (e.g., <code>adams</code> or <code>bdf</code>, depending on the system) and to set external time steps of the model to the time steps contained in the observational data:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb30"><pre class="downlit sourceCode r">
@@ -858,7 +863,7 @@ km 0.9796 1.0000</code></pre>
 <hr></section></section><section class="level2" data-number="3"><h2 data-number="3" id="implementing-models-in-compiled-languages">
 <span class="header-section-number">3</span> Implementing Models in Compiled Languages<a class="anchor" aria-label="anchor" href="#implementing-models-in-compiled-languages"></a>
 </h2>
-<p>Compilation of model code can speed up simulations considerably and there are several ways to call compiled code from R; so it is possible to use functions written in C/C++ or Fortran in the ordinary way described in the “Writing R Extensions” manual <span class="citation" data-cites="Rexts2006">(<a href="#ref-Rexts2006" role="doc-biblioref"><strong>Rexts2006?</strong></a>)</span>. This can speed up computations, but still a certain amount of communication overhead is needed because control is given back to R in every simulation step.</p>
+<p>Compilation of model code can speed up simulations considerably and there are several ways to call compiled code from R; so it is possible to use functions written in C/C++ or Fortran in the ordinary way described in the “Writing R Extensions” manual <span class="citation" data-cites="Rexts2026">(<a href="#ref-Rexts2026" role="doc-biblioref">R Core Team 2026</a>)</span>. This can speed up computations, but still a certain amount of communication overhead is needed because control is given back to R in every simulation step.</p>
 <p>In addition to this basic method, it is also possible to enable direct communication between integration routines and the model code if both are available in compiled languages and if the direct call of a compiled model is supported by the integrator. All integrators of package <strong>deSolve</strong> support this; see the <strong>deSolve</strong> documentation for details.</p>
 <section class="level3" data-number="3.1"><h3 data-number="3.1" id="an-example-in-c">
 <span class="header-section-number">3.1</span> An Example in C<a class="anchor" aria-label="anchor" href="#an-example-in-c"></a>
@@ -906,7 +911,7 @@ km 0.9796 1.0000</code></pre>
 <div class="sourceCode cell-code" id="cb77"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"R CMD SHLIB clotka.c"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<p>The result, a shared library or DLL, can now be linked to the current R session with <code>dyn.load</code>, which we show here for Windows, and which is quite similar for Linux <span class="citation" data-cites="Rexts2006">(see <a href="#ref-Rexts2006" role="doc-biblioref"><strong>Rexts2006?</strong></a>, Writing R Extensions for details)</span>. Note that you must set the working directory of R to the path where the DLL resides or use the full path in the call to <code>dyn.load</code>:</p>
+<p>The result, a shared library or DLL, can now be linked to the current R session with <code>dyn.load</code>, which we show here for Windows, and which is quite similar for Linux <span class="citation" data-cites="Rexts2026">(see <a href="#ref-Rexts2026" role="doc-biblioref">R Core Team 2026</a>, Writing R Extensions for details)</span>. Note that you must set the working directory of R to the path where the DLL resides or use the full path in the call to <code>dyn.load</code>:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">modeldll</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/dynload.html" class="external-link">dyn.load</a></span><span class="op">(</span><span class="st">"clotka.dll"</span><span class="op">)</span></span></code></pre></div>
@@ -1038,6 +1043,12 @@ Petzoldt, Thomas, and Karsten Rinke. 2007. <span>“: An Object-Oriented Framewo
 </div>
 <div id="ref-Powell2009" class="csl-entry" role="listitem">
 Powell, M. J. D. 2009. <em>The <span>BOBYQA</span> Algorithm for Bound Constrained Optimization Without Derivatives (Technical Report No. <span>DAMTP 2009/NA06</span>)</em>. <span>Cambridge: University of Cambridge, Department of Applied Mathematics and Theoretical Physics, Centre for Mathematical Sciences</span>.
+</div>
+<div id="ref-Rcore2015" class="csl-entry" role="listitem">
+R Core Team. 2015. <em>R: A Language and Environment for Statistical Computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>.
+</div>
+<div id="ref-Rexts2026" class="csl-entry" role="listitem">
+R Core Team. 2026. <em>Writing Extensions</em>. R Foundation for Statistical Computing. <a href="https://doi.org/10.32614/R.manuals" class="external-link">https://doi.org/10.32614/R.manuals</a>.
 </div>
 <div id="ref-Soetaert2010" class="csl-entry" role="listitem">
 Soetaert, Karline, and Thomas Petzoldt. 2010. <span>“Inverse Modelling, Sensitivity and Monte Carlo Analysis in Using Package .”</span> <em>Journal of Statistical Software</em> 33 (3): 1–28. <a href="https://doi.org/10.18637/jss.v033.i03" class="external-link">https://doi.org/10.18637/jss.v033.i03</a>.
