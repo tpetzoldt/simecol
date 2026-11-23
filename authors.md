@@ -10,15 +10,14 @@
 Source:
 [`inst/CITATION`](https://github.com/tpetzoldt/simecol/blob/main/inst/CITATION)
 
-Petzoldt T (2026). *simecol: Simulation of Ecological (and Other)
-Dynamic Systems*. R package version 0.9-5,
+Petzoldt T (????). *simecol: Simulation of Ecological (and Other)
+Dynamic Systems*. R package version 0.9-6,
 <https://github.com/tpetzoldt/simecol/>.
 
     @Manual{,
       title = {simecol: Simulation of Ecological (and Other) Dynamic Systems},
       author = {Thomas Petzoldt},
-      year = {2026},
-      note = {R package version 0.9-5},
+      note = {R package version 0.9-6},
       url = {https://github.com/tpetzoldt/simecol/},
     }
 
