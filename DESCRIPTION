@@ -1,10 +1,10 @@
 Package: simecol
-Version: 0.9-5
+Version: 0.9-6
 Title: Simulation of Ecological (and Other) Dynamic Systems
 Authors@R: c(person("Thomas","Petzoldt", role = c("aut", "cre"),
                      email = "thomas.petzoldt@tu-dresden.de",
 					 comment = c(ORCID = "0000-0002-4951-6468")))
-Depends: R (>= 3.2), deSolve, methods
+Depends: R (>= 4.1), deSolve, methods
 Imports: graphics, grDevices, stats, utils, minqa
 Suggests: tcltk, FME, lattice, quarto
 VignetteBuilder: quarto
@@ -19,6 +19,5 @@ License: GPL (>= 2)
 URL: https://github.com/tpetzoldt/simecol/,
         https://tpetzoldt.github.io/simecol/
 NeedsCompilation: yes
-Packaged: 2026-11-21 17:36:47 UTC; petzoldt
 Author: Thomas Petzoldt [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-4951-6468>)

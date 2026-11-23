@@ -1,4 +1,5 @@
-0.9-7
+0.9-6
+o depends: R 4.1.0
 o add sheep logo
 o convert vignettes to quarto / html
 o new 3rd vignette 
